@@ -1,4 +1,5 @@
 import { NavLink } from 'react-router-dom'
+import { useAuth } from '../hooks/useAuth'
 
 type AppSidebarItem = {
   label: string
@@ -15,6 +16,8 @@ const navigationItems: AppSidebarItem[] = [
 ]
 
 function AppSidebar() {
+  const { user, logout } = useAuth()
+
   return (
     <aside className="sidebar-panel" aria-label="Navigation">
       <div className="sidebar-brand">
@@ -40,8 +43,14 @@ function AppSidebar() {
       </nav>
 
       <div className="sidebar-footer">
-        <span>Today</span>
-        <strong>5h 20m tracked</strong>
+        {user && (
+          <div className="user-info">
+            <span>{user.username}</span>
+            <button type="button" className="logout-button" onClick={logout}>
+              Log out
+            </button>
+          </div>
+        )}
       </div>
     </aside>
   )

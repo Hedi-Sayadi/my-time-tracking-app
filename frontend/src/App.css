@@ -226,6 +226,146 @@
 	}
 }
 
+.timer-input {
+  flex: 1;
+  min-width: 220px;
+  padding: 0.82rem 1.1rem;
+  border: 1px solid #bfdbfe;
+  border-radius: 999px;
+  font: inherit;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.user-info span {
+  color: #1d4ed8;
+  font-weight: 600;
+}
+
+.logout-button {
+  background: transparent;
+  border: 0;
+  color: #64748b;
+  cursor: pointer;
+  padding: 0;
+  font: inherit;
+}
+
+.logout-button:hover {
+  color: #ef4444;
+}
+
+.auth-page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  background: #f8fbff;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 420px;
+  padding: 28px;
+  border: 1px solid #dbeafe;
+  border-radius: 20px;
+  background: #ffffff;
+  box-shadow: 0 6px 18px -18px rgba(37, 99, 235, 0.18);
+}
+
+.auth-card h1 {
+  margin-bottom: 16px;
+  color: #0f172a;
+}
+
+.auth-card form {
+  display: grid;
+  gap: 14px;
+}
+
+.auth-card label {
+  display: grid;
+  gap: 6px;
+  color: #374151;
+  font-weight: 500;
+}
+
+.auth-card input {
+  padding: 0.82rem 1rem;
+  border: 1px solid #bfdbfe;
+  border-radius: 12px;
+  font: inherit;
+}
+
+.auth-card .error {
+  color: #ef4444;
+  font-weight: 500;
+}
+
+.auth-card a {
+  color: #2563eb;
+  text-decoration: none;
+}
+
+.task-form {
+  display: grid;
+  gap: 14px;
+}
+
+.task-form label {
+  display: grid;
+  gap: 6px;
+  color: #374151;
+  font-weight: 500;
+}
+
+.task-form input {
+  padding: 0.82rem 1rem;
+  border: 1px solid #bfdbfe;
+  border-radius: 12px;
+  font: inherit;
+}
+
+.form-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.row-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.danger-button {
+  border: 0;
+  border-radius: 999px;
+  padding: 0.5rem 0.8rem;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  background: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+}
+
+.small {
+  padding: 0.5rem 0.8rem;
+  font-size: 0.9rem;
+}
+
+.page-actions {
+  margin-bottom: 10px;
+}
+
+.project-tags {
+  color: #2563eb;
+  font-size: 0.9rem;
+}
+
 @media (max-width: 640px) {
 	.dashboard-content {
 		padding: 16px;
