@@ -1,4 +1,3 @@
-import AppSidebar from '../components/AppSidebar'
 import MetricCard from '../components/MetricCard'
 import RecentTasks from '../components/RecentTasks'
 import TimerCard from '../components/TimerCard'
@@ -11,39 +10,35 @@ const metrics = [
 
 function DashboardPage() {
   return (
-    <main className="app-shell">
-      <AppSidebar />
+    <>
+      <header className="topbar">
+        <div>
+          <h1 className="hero-title">
+            <span>Keep track of your work</span>
+            <span>without the clutter.</span>
+          </h1>
+        </div>
 
-      <section className="dashboard-content">
-        <header className="topbar">
-          <div>
-            <h1 className="hero-title">
-              <span>Keep track of your work</span>
-              <span>without the clutter.</span>
-            </h1>
-          </div>
+        <button type="button" className="secondary-button">
+          Open overview
+        </button>
+      </header>
 
-          <button type="button" className="secondary-button">
-            Open overview
-          </button>
-        </header>
+      <TimerCard />
 
-        <TimerCard />
-
-        <section className="metric-grid" aria-label="Summary metrics">
-          {metrics.map((metric) => (
-            <MetricCard
-              key={metric.label}
-              label={metric.label}
-              value={metric.value}
-              note={metric.note}
-            />
-          ))}
-        </section>
-
-        <RecentTasks />
+      <section className="metric-grid" aria-label="Summary metrics">
+        {metrics.map((metric) => (
+          <MetricCard
+            key={metric.label}
+            label={metric.label}
+            value={metric.value}
+            note={metric.note}
+          />
+        ))}
       </section>
-    </main>
+
+      <RecentTasks />
+    </>
   )
 }
 
