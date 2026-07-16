@@ -18,7 +18,6 @@ function AppSidebar() {
         <span className="brand-mark">TT</span>
         <div>
           <strong>TimeTrack</strong>
-          <p>Simple personal time tracking</p>
         </div>
       </div>
 

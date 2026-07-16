@@ -17,8 +17,10 @@ function DashboardPage() {
       <section className="dashboard-content">
         <header className="topbar">
           <div>
-            <p className="eyebrow">Time tracking dashboard</p>
-            <h1>Keep track of your work without taking over the page.</h1>
+            <h1 className="hero-title">
+              <span>Keep track of your work</span>
+              <span>without the clutter.</span>
+            </h1>
           </div>
 
           <button type="button" className="secondary-button">
