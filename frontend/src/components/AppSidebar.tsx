@@ -1,14 +1,17 @@
+import { NavLink } from 'react-router-dom'
+
 type AppSidebarItem = {
   label: string
-  active?: boolean
+  to: string
+  end?: boolean
 }
 
 const navigationItems: AppSidebarItem[] = [
-  { label: 'Dashboard', active: true },
-  { label: 'Projects' },
-  { label: 'Tasks' },
-  { label: 'Reports' },
-  { label: 'Settings' },
+  { label: 'Dashboard', to: '/', end: true },
+  { label: 'Projects', to: '/projects' },
+  { label: 'Tasks', to: '/tasks' },
+  { label: 'Reports', to: '/reports' },
+  { label: 'Settings', to: '/settings' },
 ]
 
 function AppSidebar() {
@@ -23,14 +26,16 @@ function AppSidebar() {
 
       <nav className="sidebar-nav">
         {navigationItems.map((item) => (
-          <a
+          <NavLink
             key={item.label}
-            className={item.active ? 'sidebar-link active' : 'sidebar-link'}
-            href="#"
-            onClick={(event) => event.preventDefault()}
+            to={item.to}
+            end={item.end}
+            className={({ isActive }) =>
+              isActive ? 'sidebar-link active' : 'sidebar-link'
+            }
           >
             {item.label}
-          </a>
+          </NavLink>
         ))}
       </nav>
 
