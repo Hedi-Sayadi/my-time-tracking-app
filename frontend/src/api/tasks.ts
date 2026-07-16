@@ -114,3 +114,21 @@ export const useDeleteTask = () => {
     },
   });
 };
+
+export interface TaskOverview {
+  period: string;
+  totalDurationSeconds: number;
+  tasks: Task[];
+  from: string;
+  to: string;
+}
+
+export const useTaskOverview = (period: string) => {
+  return useQuery({
+    queryKey: ['tasks', 'overview', period],
+    queryFn: async (): Promise<TaskOverview> => {
+      const response = await apiClient.get(`/tasks/overview?period=${period}`);
+      return response.data;
+    },
+  });
+};

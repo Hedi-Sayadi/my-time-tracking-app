@@ -361,9 +361,33 @@
   margin-bottom: 10px;
 }
 
+.project-list {
+  display: grid;
+  gap: 10px;
+}
+
+.project-item {
+  display: grid;
+  gap: 10px;
+}
+
 .project-tags {
   color: #2563eb;
   font-size: 0.9rem;
+}
+
+select {
+  padding: 0.82rem 1rem;
+  border: 1px solid #bfdbfe;
+  border-radius: 12px;
+  font: inherit;
+  background: #ffffff;
+}
+
+.page-actions {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
 }
 
 @media (max-width: 640px) {

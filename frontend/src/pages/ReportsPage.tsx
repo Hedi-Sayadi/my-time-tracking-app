@@ -1,9 +1,19 @@
+import { useState } from 'react';
+import { useTaskOverview, type Task } from '../api/tasks';
+
+function formatDuration(seconds: number): string {
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  return `${h}h ${m}m`;
+}
+
+function formatTime(iso: string): string {
+  return new Date(iso).toLocaleString();
+}
+
 function ReportsPage() {
-  const summaries = [
-    { label: 'Today', value: '5h 20m', note: '3 tracked sessions' },
-    { label: 'This week', value: '23h 45m', note: 'Focused on project work' },
-    { label: 'This month', value: '61h 10m', note: 'Includes lecture prep' },
-  ]
+  const [period, setPeriod] = useState<'today' | 'week' | 'month'>('today');
+  const { data: overview, isLoading } = useTaskOverview(period);
 
   return (
     <section className="page-stack">
@@ -12,20 +22,63 @@ function ReportsPage() {
         <h1>See where the time went across the day, week, or month.</h1>
       </header>
 
+      <div className="page-actions">
+        {(['today', 'week', 'month'] as const).map((p) => (
+          <button
+            key={p}
+            type="button"
+            className={period === p ? 'primary-button' : 'secondary-button'}
+            onClick={() => setPeriod(p)}
+          >
+            {p === 'today' ? 'Today' : p === 'week' ? 'This week' : 'This month'}
+          </button>
+        ))}
+      </div>
+
       <article className="panel">
-        <h2>Summary view</h2>
-        <div className="metric-grid">
-          {summaries.map((summary) => (
-            <article className="metric-card" key={summary.label}>
-              <span>{summary.label}</span>
-              <strong>{summary.value}</strong>
-              <p>{summary.note}</p>
-            </article>
-          ))}
-        </div>
+        <h2>
+          {period === 'today' ? "Today's summary" : period === 'week' ? 'Weekly summary' : 'Monthly summary'}
+        </h2>
+        {isLoading ? (
+          <p>Loading...</p>
+        ) : (
+          <>
+            <div className="metric-grid">
+              <article className="metric-card">
+                <span>Total time</span>
+                <strong>{formatDuration(overview?.totalDurationSeconds ?? 0)}</strong>
+                <p>Across {overview?.tasks?.length ?? 0} tasks</p>
+              </article>
+            </div>
+
+            <div className="task-list" style={{ marginTop: 20 }}>
+              {overview?.tasks && overview.tasks.length > 0 ? (
+                overview.tasks.map((task: Task) => (
+                  <article className="task-row" key={task.id}>
+                    <div>
+                      <strong>{task.description}</strong>
+                      <p>
+                        {formatTime(task.startTime)}
+                        {task.endTime && ` → ${formatTime(task.endTime)}`}
+                        {' '}
+                        ({formatDuration(task.durationSeconds)})
+                      </p>
+                      {task.projects.length > 0 && (
+                        <p className="project-tags">{task.projects.map((p) => p.name).join(', ')}</p>
+                      )}
+                    </div>
+                    <span>{task.running ? 'Running' : 'Completed'}</span>
+                  </article>
+                ))
+              ) : (
+                <p>No tasks for this period.</p>
+              )}
+            </div>
+          </>
+        )}
       </article>
     </section>
-  )
+  );
 }
 
-export default ReportsPage
+export default ReportsPage;
