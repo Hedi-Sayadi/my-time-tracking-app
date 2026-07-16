@@ -2,15 +2,24 @@ spring:
   application:
     name: backend
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
+
 ---
 spring:
   config:
     activate:
       on-profile: dev
   datasource:
-    url: jdbc:postgresql://localhost:5432/timetracking
-    username: ${DB_USER:timetracking}
-    password: ${DB_PASSWORD:timetracking}
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/timetracking}
+    username: ${DATABASE_USERNAME:${DB_USER:timetracking}}
+    password: ${DATABASE_PASSWORD:${DB_PASSWORD:timetracking}}
   jpa:
     hibernate:
       ddl-auto: update
