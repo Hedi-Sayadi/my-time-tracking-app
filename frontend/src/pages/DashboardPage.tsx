@@ -2,9 +2,11 @@ import { useMemo } from 'react';
 import MetricCard from '../components/MetricCard'
 import RecentTasks from '../components/RecentTasks'
 import TimerCard from '../components/TimerCard'
+import CircularProgress from '../components/CircularProgress'
 import { useTaskOverview } from '../api/tasks'
 import { useProjects } from '../api/projects'
 import { useActiveTask } from '../api/tasks'
+import { useWeeklyGoal } from '../api/auth'
 
 function formatDuration(totalSeconds: number): string {
   const h = Math.floor(totalSeconds / 3600)
@@ -16,6 +18,7 @@ function DashboardPage() {
   const { data: overview } = useTaskOverview('today')
   const { data: projects } = useProjects()
   const { data: activeTask } = useActiveTask()
+  const { data: goal } = useWeeklyGoal()
 
   const metrics = useMemo(() => {
     const totalSeconds = overview?.totalDurationSeconds ?? 0
@@ -74,6 +77,13 @@ function DashboardPage() {
             note={metric.note}
           />
         ))}
+        {goal && goal.targetHours > 0 && (
+          <CircularProgress
+            value={goal.progressPercent}
+            label={`${formatDuration(goal.spentSeconds)} / ${goal.targetHours}h`}
+            sublabel={`Week ${goal.weekStart} – ${goal.weekEnd}`}
+          />
+        )}
       </section>
 
       <RecentTasks tasks={overview?.tasks ?? []} />

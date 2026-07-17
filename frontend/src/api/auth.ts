@@ -6,7 +6,16 @@ export interface User {
   username: string;
   email: string;
   timezone: string | null;
+  weeklyTargetHours: number | null;
   createdAt: string;
+}
+
+export interface WeeklyGoal {
+  targetHours: number;
+  spentSeconds: number;
+  progressPercent: number;
+  weekStart: string;
+  weekEnd: string;
 }
 
 export interface AuthResponse {
@@ -85,6 +94,31 @@ export const useUpdateTimezone = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['me'] });
+    },
+  });
+};
+
+export const useWeeklyGoal = () => {
+  return useQuery({
+    queryKey: ['weekly-goal'],
+    queryFn: async (): Promise<WeeklyGoal> => {
+      const response = await apiClient.get('/auth/me/goal');
+      return response.data;
+    },
+    enabled: !!localStorage.getItem('token'),
+  });
+};
+
+export const useUpdateWeeklyGoal = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (targetHours: number): Promise<User> => {
+      const response = await apiClient.put('/auth/me/goal', { targetHours });
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['me'] });
+      queryClient.invalidateQueries({ queryKey: ['weekly-goal'] });
     },
   });
 };

@@ -40,4 +40,14 @@ public class AuthController {
         return ResponseEntity.ok(userService.updateTimezone(request));
     }
 
+    @GetMapping("/me/goal")
+    public ResponseEntity<WeeklyGoalDto> getWeeklyGoal() {
+        return ResponseEntity.ok(userService.getWeeklyGoal());
+    }
+
+    @PutMapping("/me/goal")
+    public ResponseEntity<UserDto> updateWeeklyGoal(@RequestBody WeeklyGoalRequest request) {
+        return ResponseEntity.ok(userService.updateWeeklyTarget(request.getTargetHours()));
+    }
+
 }

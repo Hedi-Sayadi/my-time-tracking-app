@@ -13,6 +13,7 @@ public class UserDto {
     private String username;
     private String email;
     private String timezone;
+    private Integer weeklyTargetHours;
     private Instant createdAt;
 
 }
