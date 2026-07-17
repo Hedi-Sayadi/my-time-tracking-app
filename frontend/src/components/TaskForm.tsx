@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { useCreateTask, useUpdateTask, type TaskRequest } from '../api/tasks';
+import { useCreateTask, useUpdateTask, type TaskRequest, type ProjectRef } from '../api/tasks';
+import { useProjects } from '../api/projects';
 
 interface TaskFormProps {
-  initialData?: Partial<TaskRequest> & { id?: number };
+  initialData?: Partial<TaskRequest> & { id?: number; projects?: ProjectRef[] };
   onSuccess?: () => void;
   onCancel?: () => void;
 }
@@ -15,10 +16,14 @@ function TaskForm({ initialData, onSuccess, onCancel }: TaskFormProps) {
   const [endTime, setEndTime] = useState(
     initialData?.endTime ? new Date(initialData.endTime).toISOString().slice(0, 16) : ''
   );
+  const [projectIds, setProjectIds] = useState<number[]>(
+    initialData?.projects?.map((p) => p.id) ?? []
+  );
   const [error, setError] = useState('');
 
   const createTask = useCreateTask();
   const updateTask = useUpdateTask();
+  const { data: projects } = useProjects();
   const isEdit = !!initialData?.id;
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -34,6 +39,7 @@ function TaskForm({ initialData, onSuccess, onCancel }: TaskFormProps) {
       description,
       startTime: new Date(startTime).toISOString(),
       endTime: endTime ? new Date(endTime).toISOString() : null,
+      projectIds: projectIds.length > 0 ? projectIds : undefined,
     };
 
     try {
@@ -46,6 +52,12 @@ function TaskForm({ initialData, onSuccess, onCancel }: TaskFormProps) {
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Failed to save task');
     }
+  };
+
+  const toggleProject = (id: number) => {
+    setProjectIds((prev) =>
+      prev.includes(id) ? prev.filter((pid) => pid !== id) : [...prev, id]
+    );
   };
 
   return (
@@ -77,6 +89,23 @@ function TaskForm({ initialData, onSuccess, onCancel }: TaskFormProps) {
           onChange={(e) => setEndTime(e.target.value)}
         />
       </label>
+      {projects && projects.length > 0 && (
+        <fieldset className="project-fieldset">
+          <legend>Related projects</legend>
+          <div className="project-checkboxes">
+            {projects.map((project) => (
+              <label key={project.id} className="project-checkbox">
+                <input
+                  type="checkbox"
+                  checked={projectIds.includes(project.id)}
+                  onChange={() => toggleProject(project.id)}
+                />
+                {project.name}
+              </label>
+            ))}
+          </div>
+        </fieldset>
+      )}
       <div className="form-actions">
         <button type="submit" className="primary-button" disabled={createTask.isPending || updateTask.isPending}>
           {isEdit ? 'Update task' : 'Add task'}
