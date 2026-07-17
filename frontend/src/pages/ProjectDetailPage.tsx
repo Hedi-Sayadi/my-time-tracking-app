@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useProject } from '../api/projects';
+import { useAuth } from '../hooks/useAuth';
+import { useProject, useProjectMembers, useShareProject, useUnshareProject } from '../api/projects';
 import { useProjectTime, useProjectTasks } from '../api/tasks';
 
 function formatDuration(seconds: number): string {
@@ -21,6 +22,7 @@ function ProjectDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const projectId = Number(id);
+  const { user } = useAuth();
 
   const today = new Date();
   const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
@@ -28,6 +30,7 @@ function ProjectDetailPage() {
   const [to, setTo] = useState(toISOLocal(today));
 
   const { data: project, isLoading: projectLoading } = useProject(projectId);
+  const { data: members, isLoading: membersLoading } = useProjectMembers(projectId);
   const { data: timeData, isLoading: timeLoading } = useProjectTime(
     projectId,
     new Date(from).toISOString(),
@@ -39,7 +42,35 @@ function ProjectDetailPage() {
     new Date(to).toISOString()
   );
 
-  const isLoading = projectLoading || timeLoading || tasksLoading;
+  const shareProject = useShareProject();
+  const unshareProject = useUnshareProject();
+
+  const [shareUsername, setShareUsername] = useState('');
+  const [shareError, setShareError] = useState('');
+
+  const isLoading = projectLoading || timeLoading || tasksLoading || membersLoading;
+  const isOwner = project?.ownerId === user?.id;
+
+  const handleShare = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setShareError('');
+    if (!shareUsername.trim()) return;
+    try {
+      await shareProject.mutateAsync({ id: projectId, username: shareUsername.trim() });
+      setShareUsername('');
+    } catch (err: any) {
+      setShareError(err.response?.data?.detail || 'Failed to share project');
+    }
+  };
+
+  const handleUnshare = async (memberUserId: number) => {
+    if (!confirm('Remove this user from the project?')) return;
+    try {
+      await unshareProject.mutateAsync({ id: projectId, userId: memberUserId });
+    } catch (err: any) {
+      alert(err.response?.data?.detail || 'Failed to remove user');
+    }
+  };
 
   return (
     <section className="page-stack">
@@ -50,7 +81,79 @@ function ProjectDetailPage() {
         <p className="eyebrow">Project</p>
         <h1>{project?.name ?? 'Loading...'}</h1>
         {project?.description && <p>{project.description}</p>}
+        {project && (
+          <p className="project-meta">
+            Owner: <strong>{project.ownerUsername}</strong>
+            {members && members.length > 0 && (
+              <span> | Shared with {members.length} user{members.length > 1 ? 's' : ''}</span>
+            )}
+          </p>
+        )}
       </header>
+
+      {isOwner && (
+        <article className="panel">
+          <h2>Share project</h2>
+          <form onSubmit={handleShare} className="share-form">
+            {shareError && <p className="error">{shareError}</p>}
+            <div className="share-form-row">
+              <input
+                type="text"
+                placeholder="Enter username to invite"
+                value={shareUsername}
+                onChange={(e) => setShareUsername(e.target.value)}
+                className="share-input"
+              />
+              <button
+                type="submit"
+                className="primary-button"
+                disabled={shareProject.isPending || !shareUsername.trim()}
+              >
+                {shareProject.isPending ? 'Sharing...' : 'Share'}
+              </button>
+            </div>
+          </form>
+
+          {members && members.length > 0 && (
+            <div className="member-list" style={{ marginTop: 12 }}>
+              <h3>Members</h3>
+              <div className="task-list">
+                {members.map((member) => (
+                  <article className="task-row" key={member.id}>
+                    <div>
+                      <strong>{member.username}</strong>
+                    </div>
+                    <button
+                      type="button"
+                      className="danger-button small"
+                      onClick={() => handleUnshare(member.userId)}
+                      disabled={unshareProject.isPending}
+                    >
+                      Remove
+                    </button>
+                  </article>
+                ))}
+              </div>
+            </div>
+          )}
+        </article>
+      )}
+
+      {!isOwner && members && (
+        <article className="panel">
+          <h2>Project members</h2>
+          <div className="task-list">
+            <article className="task-row">
+              <div><strong>{project?.ownerUsername}</strong> <span>(owner)</span></div>
+            </article>
+            {members.map((member) => (
+              <article className="task-row" key={member.id}>
+                <div><strong>{member.username}</strong></div>
+              </article>
+            ))}
+          </div>
+        </article>
+      )}
 
       <article className="panel">
         <h2>Select time frame</h2>

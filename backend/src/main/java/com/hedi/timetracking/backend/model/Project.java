@@ -45,6 +45,10 @@ public class Project {
     @Builder.Default
     private Set<TaskProject> taskProjects = new HashSet<>();
 
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @Builder.Default
+    private Set<ProjectMember> members = new HashSet<>();
+
     @CreationTimestamp
     @Column(nullable = false, updatable = false, name = "created_at")
     private Instant createdAt;

@@ -1,12 +1,22 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import apiClient from './client';
 
+export interface ProjectMember {
+  id: number;
+  userId: number;
+  username: string;
+  joinedAt: string;
+}
+
 export interface Project {
   id: number;
   name: string;
   description: string;
   parentId: number | null;
   subprojects: Project[];
+  ownerId: number;
+  ownerUsername: string;
+  members: ProjectMember[];
   createdAt: string;
 }
 
@@ -72,5 +82,43 @@ export const useDeleteProject = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['projects'] });
     },
+  });
+};
+
+export const useShareProject = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, username }: { id: number; username: string }): Promise<ProjectMember> => {
+      const response = await apiClient.post(`/projects/${id}/share`, { username });
+      return response.data;
+    },
+    onSuccess: (_, { id }) => {
+      queryClient.invalidateQueries({ queryKey: ['projects', id] });
+      queryClient.invalidateQueries({ queryKey: ['projects', id, 'members'] });
+    },
+  });
+};
+
+export const useUnshareProject = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, userId }: { id: number; userId: number }) => {
+      await apiClient.delete(`/projects/${id}/share/${userId}`);
+    },
+    onSuccess: (_, { id }) => {
+      queryClient.invalidateQueries({ queryKey: ['projects', id] });
+      queryClient.invalidateQueries({ queryKey: ['projects', id, 'members'] });
+    },
+  });
+};
+
+export const useProjectMembers = (id: number) => {
+  return useQuery({
+    queryKey: ['projects', id, 'members'],
+    queryFn: async (): Promise<ProjectMember[]> => {
+      const response = await apiClient.get(`/projects/${id}/members`);
+      return response.data;
+    },
+    enabled: !!id,
   });
 };
