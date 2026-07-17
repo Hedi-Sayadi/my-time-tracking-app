@@ -16,7 +16,7 @@ const navigationItems: AppSidebarItem[] = [
 ]
 
 function AppSidebar() {
-  const { user, logout } = useAuth()
+  const { user } = useAuth()
 
   return (
     <aside className="sidebar-panel" aria-label="Navigation">
@@ -46,9 +46,6 @@ function AppSidebar() {
         {user && (
           <div className="user-info">
             <span>{user.username}</span>
-            <button type="button" className="logout-button" onClick={logout}>
-              Log out
-            </button>
           </div>
         )}
       </div>
