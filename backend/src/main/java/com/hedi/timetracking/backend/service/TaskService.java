@@ -49,7 +49,7 @@ public class TaskService {
     }
 
     @Transactional
-    public TaskDto startTask(TaskRequest request) {
+    public TaskDto startTask(StartTaskRequest request) {
         Long userId = getCurrentUserId();
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
@@ -86,6 +86,22 @@ public class TaskService {
 
         task.setRunning(false);
         task.setEndTime(Instant.now());
+        task = taskRepository.save(task);
+        return mapToDto(task);
+    }
+
+    @Transactional
+    public TaskDto resumeTask(Long id) {
+        Long userId = getCurrentUserId();
+        Task task = taskRepository.findByIdAndUserId(id, userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Task not found"));
+
+        if (Boolean.TRUE.equals(task.getRunning())) {
+            throw new IllegalStateException("Task is already running");
+        }
+
+        task.setRunning(true);
+        task.setEndTime(null);
         task = taskRepository.save(task);
         return mapToDto(task);
     }
@@ -200,6 +216,20 @@ public class TaskService {
         dto.setTotalDurationSeconds(totalSeconds);
         dto.setTaskCount(tasks.size());
         return dto;
+    }
+
+    @Transactional(readOnly = true)
+    public List<TaskDto> getProjectTasks(Long projectId, Instant from, Instant to) {
+        Long userId = getCurrentUserId();
+        projectRepository.findByIdAndUserId(projectId, userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Project not found"));
+
+        // Deduplicated tasks for this project and its subprojects
+        Set<Task> tasks = new HashSet<>(taskRepository.findByProjectOrSubprojectsAndTimeRange(projectId, userId, from, to));
+        return tasks.stream()
+                .sorted(Comparator.comparing(Task::getStartTime).reversed())
+                .map(this::mapToDto)
+                .toList();
     }
 
     private void linkProjects(Task task, Set<Long> projectIds, Long userId) {
