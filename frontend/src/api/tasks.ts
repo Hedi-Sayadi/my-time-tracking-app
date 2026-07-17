@@ -8,7 +8,9 @@ export interface Task {
   endTime: string | null;
   running: boolean;
   durationSeconds: number;
-  projects: ProjectRef[];
+  projects: { id: number; name: string }[];
+  userId: number;
+  username: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -154,22 +156,30 @@ export interface ProjectTime {
   taskCount: number;
 }
 
-export const useProjectTime = (projectId: number, from: string, to: string) => {
+export const useProjectTime = (projectId: number, from: string, to: string, userId?: number | null) => {
   return useQuery({
-    queryKey: ['projects', projectId, 'time', from, to],
+    queryKey: ['projects', projectId, 'time', from, to, userId],
     queryFn: async (): Promise<ProjectTime> => {
-      const response = await apiClient.get(`/tasks/projects/${projectId}/time?from=${from}&to=${to}`);
+      const params = new URLSearchParams();
+      params.append('from', from);
+      params.append('to', to);
+      if (userId != null) params.append('userId', String(userId));
+      const response = await apiClient.get(`/tasks/projects/${projectId}/time?${params.toString()}`);
       return response.data;
     },
     enabled: !!projectId && !!from && !!to,
   });
 };
 
-export const useProjectTasks = (projectId: number, from: string, to: string) => {
+export const useProjectTasks = (projectId: number, from: string, to: string, userId?: number | null) => {
   return useQuery({
-    queryKey: ['projects', projectId, 'tasks', from, to],
+    queryKey: ['projects', projectId, 'tasks', from, to, userId],
     queryFn: async (): Promise<Task[]> => {
-      const response = await apiClient.get(`/tasks/projects/${projectId}/tasks?from=${from}&to=${to}`);
+      const params = new URLSearchParams();
+      params.append('from', from);
+      params.append('to', to);
+      if (userId != null) params.append('userId', String(userId));
+      const response = await apiClient.get(`/tasks/projects/${projectId}/tasks?${params.toString()}`);
       return response.data;
     },
     enabled: !!projectId && !!from && !!to,
