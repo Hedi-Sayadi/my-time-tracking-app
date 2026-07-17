@@ -26,6 +26,17 @@ export const useProjects = () => {
   });
 };
 
+export const useProject = (id: number) => {
+  return useQuery({
+    queryKey: ['projects', id],
+    queryFn: async (): Promise<Project> => {
+      const response = await apiClient.get(`/projects/${id}`);
+      return response.data;
+    },
+    enabled: !!id,
+  });
+};
+
 export const useCreateProject = () => {
   const queryClient = useQueryClient();
   return useMutation({
