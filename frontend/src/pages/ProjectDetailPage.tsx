@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { useProject, useProjectMembers, useShareProject, useUnshareProject } from '../api/projects';
-import { useProjectTime, useProjectTasks } from '../api/tasks';
+import { useProjectTime, useProjectTasks, exportProjectTasks } from '../api/tasks';
 
 function formatDuration(seconds: number): string {
   const h = Math.floor(seconds / 3600);
@@ -164,7 +164,28 @@ function ProjectDetailPage() {
       )}
 
       <article className="panel">
-        <h2>Select time frame</h2>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
+          <h2 style={{ margin: 0 }}>Select time frame</h2>
+          <button
+            type="button"
+            className="secondary-button"
+            onClick={async () => {
+              try {
+                const blob = await exportProjectTasks(projectId, new Date(from).toISOString(), new Date(to).toISOString());
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `project-${projectId}-tasks.csv`;
+                a.click();
+                window.URL.revokeObjectURL(url);
+              } catch {
+                alert('Export failed');
+              }
+            }}
+          >
+            Export CSV
+          </button>
+        </div>
         <div className="date-range">
           <label>
             From

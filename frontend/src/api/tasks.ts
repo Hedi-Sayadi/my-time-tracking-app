@@ -185,3 +185,13 @@ export const useProjectTasks = (projectId: number, from: string, to: string, use
     enabled: !!projectId && !!from && !!to,
   });
 };
+
+export const exportProjectTasks = async (projectId: number, from: string, to: string): Promise<Blob> => {
+  const params = new URLSearchParams();
+  params.append('from', from);
+  params.append('to', to);
+  const response = await apiClient.get(`/tasks/projects/${projectId}/export?${params.toString()}`, {
+    responseType: 'blob',
+  });
+  return response.data;
+};

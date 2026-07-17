@@ -258,6 +258,20 @@ public class TaskService {
         }
     }
 
+    @Transactional(readOnly = true)
+    public List<TaskDto> exportProjectTasks(Long projectId, Instant from, Instant to) {
+        Long userId = getCurrentUserId();
+        projectRepository.findAccessibleById(userId, projectId)
+                .orElseThrow(() -> new ResourceNotFoundException("Project not found"));
+
+        List<Task> taskList = taskRepository.findAllByProjectOrSubprojectsAndTimeRange(projectId, from, to);
+        Set<Task> tasks = new HashSet<>(taskList);
+        return tasks.stream()
+                .sorted(Comparator.comparing(Task::getStartTime).reversed())
+                .map(this::mapToDto)
+                .toList();
+    }
+
     private TaskDto mapToDto(Task task) {
         TaskDto dto = new TaskDto();
         dto.setId(task.getId());
