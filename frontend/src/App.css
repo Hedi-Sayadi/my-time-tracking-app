@@ -323,7 +323,8 @@
 	color: #64748b;
 	font-size: 0.85rem;
 	margin: 0;
-	margin-top: -4px;
+	margin-top: 6px;
+	width: 100%;
 }
 
 .timer-pause-actions {
