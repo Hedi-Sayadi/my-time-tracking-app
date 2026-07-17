@@ -198,9 +198,6 @@ function TimerCard() {
               onChange={(e) => setDescription(e.target.value)}
               className="timer-input"
             />
-            <p className="timer-helper-text">
-              Start the timer for live tracking, or use Add entry to log past time manually.
-            </p>
 
             {projects && projects.length > 0 && (
               <div className="timer-project-select">
@@ -233,6 +230,9 @@ function TimerCard() {
                 Add entry
               </button>
             </div>
+            <p className="timer-helper-text">
+              Start the timer for live tracking, or use Add entry to log past time manually.
+            </p>
           </>
         )}
       </div>
