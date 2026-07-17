@@ -185,6 +185,12 @@ public class ProjectService {
         dto.setOwnerUsername(project.getUser().getUsername());
         dto.setMembers(project.getMembers().stream().map(this::mapMemberToDto).toList());
         dto.setBudgetHours(project.getBudgetHours());
+
+        long spentSeconds = taskRepository.findAllByProjectId(project.getId()).stream()
+                .mapToLong(Task::getDurationSeconds)
+                .sum();
+        dto.setSpentSeconds(spentSeconds);
+
         dto.setCreatedAt(project.getCreatedAt());
         return dto;
     }

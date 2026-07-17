@@ -57,7 +57,6 @@ function ProjectItem({
       <article className="task-row">
         <div>
           <strong>{project.name}</strong>
-          {project.description && <p>{project.description}</p>}
           <BudgetBar budgetHours={project.budgetHours} spentSeconds={project.spentSeconds} />
         </div>
         <div className="row-actions">
