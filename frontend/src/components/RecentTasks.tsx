@@ -1,22 +1,25 @@
-const recentTasks = [
-  {
-    title: 'Organize the project structure',
-    project: 'Final project',
-    duration: '01:15',
-  },
-  {
-    title: 'Read seminar paper and mark key points',
-    project: 'Seminar HCI',
-    duration: '02:05',
-  },
-  {
-    title: 'Clean up notes before saving',
-    project: 'Research',
-    duration: '00:48',
-  },
-]
+import type { Task } from '../api/tasks'
+import { formatTime } from '../utils/datetime'
+import { useAuth } from '../hooks/useAuth'
 
-function RecentTasks() {
+function formatDuration(seconds: number): string {
+  const h = Math.floor(seconds / 3600)
+  const m = Math.floor((seconds % 3600) / 60)
+  const s = seconds % 60
+  return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
+}
+
+interface RecentTasksProps {
+  tasks: Task[]
+}
+
+function RecentTasks({ tasks }: RecentTasksProps) {
+  const { user } = useAuth()
+
+  const sortedTasks = [...tasks].sort(
+    (a, b) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime()
+  )
+
   return (
     <section className="panel" aria-label="Recent tasks">
       <div className="panel-heading">
@@ -25,13 +28,20 @@ function RecentTasks() {
       </div>
 
       <div className="task-list">
-        {recentTasks.map((task) => (
-          <article className="task-row" key={task.title}>
+        {sortedTasks.length === 0 && <p>No tasks logged today yet.</p>}
+        {sortedTasks.slice(0, 5).map((task) => (
+          <article className="task-row" key={task.id}>
             <div>
-              <strong>{task.title}</strong>
-              <p>{task.project}</p>
+              <strong>{task.description}</strong>
+              <p>
+                {task.projects.length > 0
+                  ? task.projects.map((p) => p.name).join(', ')
+                  : 'No project'}
+                {' · '}
+                {formatTime(task.startTime, user?.timezone)}
+              </p>
             </div>
-            <span>{task.duration}</span>
+            <span>{formatDuration(task.durationSeconds)}</span>
           </article>
         ))}
       </div>

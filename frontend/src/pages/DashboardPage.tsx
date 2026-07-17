@@ -1,14 +1,53 @@
+import { useMemo } from 'react';
 import MetricCard from '../components/MetricCard'
 import RecentTasks from '../components/RecentTasks'
 import TimerCard from '../components/TimerCard'
+import { useTaskOverview } from '../api/tasks'
+import { useProjects } from '../api/projects'
+import { useActiveTask } from '../api/tasks'
 
-const metrics = [
-  { label: 'Tracked today', value: '5h 20m', note: 'Mostly lecture prep and notes' },
-  { label: 'Projects', value: '8', note: 'Lectures, seminars, and a bit of side work' },
-  { label: 'Running timer', value: '1', note: 'One task is still active' },
-]
+function formatDuration(totalSeconds: number): string {
+  const h = Math.floor(totalSeconds / 3600)
+  const m = Math.floor((totalSeconds % 3600) / 60)
+  return `${h}h ${m}m`
+}
 
 function DashboardPage() {
+  const { data: overview } = useTaskOverview('today')
+  const { data: projects } = useProjects()
+  const { data: activeTask } = useActiveTask()
+
+  const metrics = useMemo(() => {
+    const totalSeconds = overview?.totalDurationSeconds ?? 0
+    const taskCount = overview?.tasks?.length ?? 0
+    const projectCount = projects?.length ?? 0
+    const hasActiveTask = !!activeTask?.running
+
+    return [
+      {
+        label: 'Tracked today',
+        value: totalSeconds > 0 ? formatDuration(totalSeconds) : '0h 0m',
+        note: taskCount > 0
+          ? `${taskCount} task${taskCount === 1 ? '' : 's'} logged today`
+          : 'No tasks logged yet today',
+      },
+      {
+        label: 'Projects',
+        value: String(projectCount),
+        note: projectCount > 0
+          ? 'Accessible projects'
+          : 'No projects yet',
+      },
+      {
+        label: 'Running timer',
+        value: hasActiveTask ? '1' : '0',
+        note: hasActiveTask
+          ? `${activeTask?.description ?? 'One task'} is active`
+          : 'No active task',
+      },
+    ]
+  }, [overview, projects, activeTask])
+
   return (
     <>
       <header className="topbar">
@@ -37,7 +76,7 @@ function DashboardPage() {
         ))}
       </section>
 
-      <RecentTasks />
+      <RecentTasks tasks={overview?.tasks ?? []} />
     </>
   )
 }
