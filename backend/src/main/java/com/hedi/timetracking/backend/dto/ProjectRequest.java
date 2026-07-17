@@ -18,4 +18,6 @@ public class ProjectRequest {
 
     private Long parentId;
 
+    private Integer budgetHours;
+
 }

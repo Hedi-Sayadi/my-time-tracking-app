@@ -27,7 +27,7 @@ public class TaskService {
     @Transactional(readOnly = true)
     public List<TaskDto> getAllTasks() {
         Long userId = getCurrentUserId();
-        return taskRepository.findByUserId(userId).stream()
+        return taskRepository.findAccessibleByUserId(userId).stream()
                 .map(this::mapToDto)
                 .toList();
     }
@@ -35,7 +35,7 @@ public class TaskService {
     @Transactional(readOnly = true)
     public TaskDto getTask(Long id) {
         Long userId = getCurrentUserId();
-        Task task = taskRepository.findByIdAndUserId(id, userId)
+        Task task = taskRepository.findAccessibleByIdAndUserId(id, userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Task not found"));
         return mapToDto(task);
     }
@@ -180,9 +180,7 @@ public class TaskService {
             }
         }
 
-        List<Task> tasks = taskRepository.findByUserId(userId).stream()
-                .filter(t -> !t.getStartTime().isBefore(from) && !t.getStartTime().isAfter(to))
-                .toList();
+        List<Task> tasks = taskRepository.findAccessibleByUserIdAndTimeRange(userId, from, to);
 
         long totalSeconds = tasks.stream()
                 .mapToLong(Task::getDurationSeconds)

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import { useActiveTask, useStartTask, useStopTask, useResumeTask, useTasks } from '../api/tasks';
+import { useActiveTask, useStartTask, useStopTask, useResumeTask, useDeleteTask, useTasks } from '../api/tasks';
 import { useProjects } from '../api/projects';
+import { useAuth } from '../hooks/useAuth';
 import type { Task } from '../api/tasks';
 
 function formatDuration(seconds: number): string {
@@ -11,12 +12,15 @@ function formatDuration(seconds: number): string {
 }
 
 function TimerCard() {
+  const { user } = useAuth();
   const { data: activeTask, isLoading } = useActiveTask();
   const startTask = useStartTask();
   const stopTask = useStopTask();
   const resumeTask = useResumeTask();
+  const deleteTask = useDeleteTask();
   const { data: projects } = useProjects();
   const { data: allTasks } = useTasks();
+  const myTasks = allTasks?.filter((t) => t.userId === user?.id);
 
   const [description, setDescription] = useState('');
   const [projectIds, setProjectIds] = useState<number[]>([]);
@@ -65,19 +69,26 @@ function TimerCard() {
     setPausedTask(null);
   };
 
+  const handleCancel = async () => {
+    if (pausedTask) {
+      await deleteTask.mutateAsync(pausedTask.id);
+      setPausedTask(null);
+    }
+  };
+
   const toggleProject = (id: number) => {
     setProjectIds((prev) =>
       prev.includes(id) ? prev.filter((pid) => pid !== id) : [...prev, id]
     );
   };
 
-  const selectRecentTask = (taskId: number) => {
-    if (taskId === 0) {
+  const selectRecentTask = (desc: string) => {
+    if (desc === '0') {
       setDescription('');
       setProjectIds([]);
       return;
     }
-    const task = allTasks?.find((t) => t.id === taskId);
+    const task = recentTasks.find((t) => t.description === desc);
     if (task) {
       setDescription(task.description);
       setProjectIds(task.projects.map((p) => p.id));
@@ -95,10 +106,12 @@ function TimerCard() {
   const isRunning = !!activeTask?.running;
   const isPaused = !!pausedTask && !isRunning;
 
-  const recentTasks = allTasks
-    ? [...allTasks]
-        .sort((a, b) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime())
-        .slice(0, 10)
+  const recentTasks = myTasks
+    ? [...new Map(
+        [...myTasks]
+          .sort((a, b) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime())
+          .map((t) => [t.description, t])
+      ).values()].slice(0, 10)
     : [];
 
   return (
@@ -160,6 +173,9 @@ function TimerCard() {
             <button type="button" className="secondary-button" onClick={handleLogTime}>
               Log time
             </button>
+            <button type="button" className="danger-button" onClick={handleCancel} disabled={deleteTask.isPending}>
+              {deleteTask.isPending ? 'Cancelling...' : 'Cancel'}
+            </button>
           </div>
         ) : (
           <>
@@ -169,19 +185,12 @@ function TimerCard() {
                   Or continue a recent task
                   <select
                     className="timer-recent-select"
-                    onChange={(e) => selectRecentTask(Number(e.target.value))}
-                    value={
-                      allTasks?.find(
-                        (t) =>
-                          t.description === description &&
-                          t.projects.length === projectIds.length &&
-                          t.projects.every((p) => projectIds.includes(p.id))
-                      )?.id ?? 0
-                    }
+                    onChange={(e) => selectRecentTask(e.target.value)}
+                    value={description || '0'}
                   >
-                    <option value={0}>— New task —</option>
+                    <option value="0">— New task —</option>
                     {recentTasks.map((task) => (
-                      <option key={task.id} value={task.id}>
+                      <option key={task.id} value={task.description}>
                         {task.description}
                         {task.projects.length > 0 ? ` (${task.projects.map((p) => p.name).join(', ')})` : ''}
                       </option>

@@ -65,23 +65,25 @@ function TasksPage() {
                     </p>
                   )}
                 </div>
-                <div className="row-actions">
-                  <button
-                    type="button"
-                    className="secondary-button small"
-                    onClick={() => { setEditingTask(task); setShowForm(true); }}
-                  >
-                    Edit
-                  </button>
-                  <button
-                    type="button"
-                    className="danger-button small"
-                    onClick={() => { if (confirm('Delete this task?')) deleteTask.mutate(task.id); }}
-                    disabled={deleteTask.isPending}
-                  >
-                    Delete
-                  </button>
-                </div>
+                {task.userId === user?.id && (
+                  <div className="row-actions">
+                    <button
+                      type="button"
+                      className="secondary-button small"
+                      onClick={() => { setEditingTask(task); setShowForm(true); }}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      type="button"
+                      className="danger-button small"
+                      onClick={() => { if (confirm('Delete this task?')) deleteTask.mutate(task.id); }}
+                      disabled={deleteTask.isPending}
+                    >
+                      Delete
+                    </button>
+                  </div>
+                )}
               </article>
             ))}
           </div>

@@ -20,6 +20,50 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     Optional<Task> findByUserIdAndRunningTrue(Long userId);
 
     @Query("""
+        SELECT t FROM Task t
+        WHERE t.user.id = :userId
+        OR EXISTS (
+            SELECT 1 FROM TaskProject tp
+            JOIN tp.project p
+            JOIN ProjectMember pm ON pm.project.id = p.id
+            WHERE tp.task.id = t.id AND pm.user.id = :userId
+        )
+        ORDER BY t.startTime DESC
+        """)
+    List<Task> findAccessibleByUserId(@Param("userId") Long userId);
+
+    @Query("""
+        SELECT t FROM Task t
+        WHERE (t.user.id = :userId
+        OR EXISTS (
+            SELECT 1 FROM TaskProject tp
+            JOIN tp.project p
+            JOIN ProjectMember pm ON pm.project.id = p.id
+            WHERE tp.task.id = t.id AND pm.user.id = :userId
+        ))
+        AND t.startTime >= :from
+        AND (t.endTime IS NULL OR t.endTime <= :to)
+        ORDER BY t.startTime DESC
+        """)
+    List<Task> findAccessibleByUserIdAndTimeRange(
+            @Param("userId") Long userId,
+            @Param("from") Instant from,
+            @Param("to") Instant to);
+
+    @Query("""
+        SELECT t FROM Task t
+        WHERE t.id = :taskId
+        AND (t.user.id = :userId
+        OR EXISTS (
+            SELECT 1 FROM TaskProject tp
+            JOIN tp.project p
+            JOIN ProjectMember pm ON pm.project.id = p.id
+            WHERE tp.task.id = t.id AND pm.user.id = :userId
+        ))
+        """)
+    Optional<Task> findAccessibleByIdAndUserId(@Param("taskId") Long taskId, @Param("userId") Long userId);
+
+    @Query("""
         SELECT DISTINCT t FROM Task t
         JOIN t.taskProjects tp
         JOIN tp.project p
@@ -46,5 +90,12 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
             @Param("userId") Long userId,
             @Param("from") Instant from,
             @Param("to") Instant to);
+
+    @Query("""
+        SELECT t FROM Task t
+        JOIN t.taskProjects tp
+        WHERE tp.project.id = :projectId
+        """)
+    List<Task> findAllByProjectId(@Param("projectId") Long projectId);
 
 }
