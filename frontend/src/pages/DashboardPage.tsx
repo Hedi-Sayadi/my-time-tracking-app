@@ -77,14 +77,21 @@ function DashboardPage() {
             note={metric.note}
           />
         ))}
-        {goal && goal.targetHours > 0 && (
-          <CircularProgress
-            value={goal.progressPercent}
-            label={`${formatDuration(goal.spentSeconds)} / ${goal.targetHours}h`}
-            sublabel={`Week ${goal.weekStart} – ${goal.weekEnd}`}
-          />
-        )}
       </section>
+
+      {goal && goal.targetHours > 0 && (
+        <section className="panel">
+          <h2>Your weekly goal</h2>
+          <div style={{ display: 'flex', justifyContent: 'center', padding: '1rem 0' }}>
+            <CircularProgress
+              value={goal.progressPercent}
+              label={`${formatDuration(goal.spentSeconds)} / ${goal.targetHours}h`}
+              sublabel={`Week ${goal.weekStart} – ${goal.weekEnd}`}
+              size={160}
+            />
+          </div>
+        </section>
+      )}
 
       <RecentTasks tasks={overview?.tasks ?? []} />
     </>

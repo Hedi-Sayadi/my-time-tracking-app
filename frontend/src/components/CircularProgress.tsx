@@ -16,7 +16,9 @@ const CircularProgress: React.FC<CircularProgressProps> = ({
 }) => {
   const radius = (size - 16) / 2;
   const circumference = 2 * Math.PI * radius;
-  const offset = circumference - (Math.min(value, 100) / 100) * circumference;
+  const clamped = Math.min(value, 100);
+  // SVG circles start at 3 o'clock; shift by 25% to start at 12 o'clock
+  const offset = circumference * 0.75 - (clamped / 100) * circumference;
 
   let colorClass = styles.blue;
   if (value >= 80 && value <= 100) colorClass = styles.orange;
@@ -24,33 +26,25 @@ const CircularProgress: React.FC<CircularProgressProps> = ({
 
   return (
     <div className={styles.progressRing}>
-      <svg width={size} height={size} className={styles.svg}>
-        <circle
-          className={styles.track}
-          cx={size / 2}
-          cy={size / 2}
-          r={radius}
-        />
-        <circle
-          className={`${styles.indicator} ${colorClass}`}
-          cx={size / 2}
-          cy={size / 2}
-          r={radius}
-          strokeDasharray={circumference}
-          strokeDashoffset={offset}
-        />
-        <text
-          x="50%"
-          y="50%"
-          dy="0.3em"
-          textAnchor="middle"
-          fontSize="14"
-          fontWeight="600"
-          fill="currentColor"
-        >
-          {Math.round(value)}%
-        </text>
-      </svg>
+      <div className={styles.svgWrapper} style={{ width: size, height: size }}>
+        <svg width={size} height={size}>
+          <circle
+            className={styles.track}
+            cx={size / 2}
+            cy={size / 2}
+            r={radius}
+          />
+          <circle
+            className={`${styles.indicator} ${colorClass}`}
+            cx={size / 2}
+            cy={size / 2}
+            r={radius}
+            strokeDasharray={circumference}
+            strokeDashoffset={offset}
+          />
+        </svg>
+        <div className={styles.percentage}>{Math.round(value)}%</div>
+      </div>
       <div className={styles.label}>
         <div className={styles.value}>{label}</div>
         <div>{sublabel}</div>

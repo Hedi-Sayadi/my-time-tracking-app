@@ -3,15 +3,19 @@
   flex-direction: column;
   align-items: center;
   gap: 0.5rem;
+  min-width: 140px;
 }
 
-.svg {
-  transform: rotate(-90deg);
+.svgWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .track {
   fill: none;
-  stroke: var(--color-surface-300);
+  stroke: #e2e8f0;
   stroke-width: 8;
 }
 
@@ -23,24 +27,36 @@
 }
 
 .indicator.blue {
-  stroke: var(--color-primary-500);
+  stroke: #3b82f6;
 }
 
 .indicator.orange {
-  stroke: var(--color-warning-500);
+  stroke: #f59e0b;
 }
 
 .indicator.green {
-  stroke: var(--color-success-500);
+  stroke: #22c55e;
+}
+
+.percentage {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #1e293b;
+  pointer-events: none;
+  line-height: 1;
 }
 
 .label {
-  font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+  color: #64748b;
   text-align: center;
 }
 
 .value {
   font-weight: 600;
-  color: var(--color-text-primary);
+  color: #1e293b;
 }
