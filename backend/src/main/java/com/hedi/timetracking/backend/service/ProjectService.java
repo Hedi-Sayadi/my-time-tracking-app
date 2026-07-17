@@ -156,6 +156,24 @@ public class ProjectService {
     }
 
     @Transactional(readOnly = true)
+    public List<MemberContributionDto> getTeamContributions(Long projectId) {
+        Long userId = getCurrentUserId();
+        if (!projectRepository.findAccessibleById(userId, projectId).isPresent()) {
+            throw new ResourceNotFoundException("Project not found");
+        }
+
+        List<Object[]> rows = taskRepository.aggregateTimeByUserForProject(projectId);
+        return rows.stream().map(row -> {
+            MemberContributionDto dto = new MemberContributionDto();
+            dto.setUserId((Long) row[0]);
+            dto.setUsername((String) row[1]);
+            dto.setTaskCount(((Long) row[2]).intValue());
+            dto.setTotalDurationSeconds((Long) row[3]);
+            return dto;
+        }).toList();
+    }
+
+    @Transactional(readOnly = true)
     public ProjectBudgetDto getBudget(Long projectId) {
         Long userId = getCurrentUserId();
         Project project = projectRepository.findAccessibleById(userId, projectId)

@@ -98,4 +98,13 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
         """)
     List<Task> findAllByProjectId(@Param("projectId") Long projectId);
 
+    @Query("""
+        SELECT t.user.id, t.user.username, COUNT(t), SUM(t.durationSeconds)
+        FROM Task t
+        JOIN t.taskProjects tp
+        WHERE tp.project.id = :projectId
+        GROUP BY t.user.id, t.user.username
+        """)
+    List<Object[]> aggregateTimeByUserForProject(@Param("projectId") Long projectId);
+
 }
