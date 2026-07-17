@@ -11,6 +11,8 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.*;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.util.UUID;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -26,11 +28,13 @@ class ProjectControllerIntegrationTest {
 
     @BeforeEach
     void setUp() {
+        String unique = UUID.randomUUID().toString().substring(0, 8);
         RegisterRequest reg = new RegisterRequest();
-        reg.setUsername("projectuser");
-        reg.setEmail("project@example.com");
+        reg.setUsername("projectuser" + unique);
+        reg.setEmail("project" + unique + "@example.com");
         reg.setPassword("password123");
         ResponseEntity<AuthResponse> auth = restTemplate.postForEntity("/api/auth/register", reg, AuthResponse.class);
+        assertThat(auth.getStatusCode()).isEqualTo(HttpStatus.OK);
         token = auth.getBody().getToken();
 
         headers = new HttpHeaders();

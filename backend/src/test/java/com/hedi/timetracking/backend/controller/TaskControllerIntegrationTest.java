@@ -13,6 +13,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.time.Instant;
 import java.util.Set;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -29,11 +30,13 @@ class TaskControllerIntegrationTest {
 
     @BeforeEach
     void setUp() {
+        String unique = UUID.randomUUID().toString().substring(0, 8);
         RegisterRequest reg = new RegisterRequest();
-        reg.setUsername("taskuser");
-        reg.setEmail("task@example.com");
+        reg.setUsername("taskuser" + unique);
+        reg.setEmail("task" + unique + "@example.com");
         reg.setPassword("password123");
         ResponseEntity<AuthResponse> auth = restTemplate.postForEntity("/api/auth/register", reg, AuthResponse.class);
+        assertThat(auth.getStatusCode()).isEqualTo(HttpStatus.OK);
         token = auth.getBody().getToken();
 
         headers = new HttpHeaders();
@@ -43,10 +46,10 @@ class TaskControllerIntegrationTest {
 
     @Test
     void startTask_shouldCreateRunningTask() {
-        TaskRequest request = new TaskRequest();
+        StartTaskRequest request = new StartTaskRequest();
         request.setDescription("Working on stuff");
 
-        HttpEntity<TaskRequest> entity = new HttpEntity<>(request, headers);
+        HttpEntity<StartTaskRequest> entity = new HttpEntity<>(request, headers);
         ResponseEntity<TaskDto> response = restTemplate.postForEntity("/api/tasks/start", entity, TaskDto.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -57,9 +60,9 @@ class TaskControllerIntegrationTest {
 
     @Test
     void stopTask_shouldEndRunningTask() {
-        TaskRequest request = new TaskRequest();
+        StartTaskRequest request = new StartTaskRequest();
         request.setDescription("Stop me");
-        HttpEntity<TaskRequest> entity = new HttpEntity<>(request, headers);
+        HttpEntity<StartTaskRequest> entity = new HttpEntity<>(request, headers);
         ResponseEntity<TaskDto> startResp = restTemplate.postForEntity("/api/tasks/start", entity, TaskDto.class);
         Long taskId = startResp.getBody().getId();
 
@@ -73,9 +76,9 @@ class TaskControllerIntegrationTest {
 
     @Test
     void getActiveTask_shouldReturnRunningTask() {
-        TaskRequest request = new TaskRequest();
+        StartTaskRequest request = new StartTaskRequest();
         request.setDescription("Active task");
-        HttpEntity<TaskRequest> entity = new HttpEntity<>(request, headers);
+        HttpEntity<StartTaskRequest> entity = new HttpEntity<>(request, headers);
         restTemplate.postForEntity("/api/tasks/start", entity, TaskDto.class);
 
         ResponseEntity<TaskDto> response = restTemplate.exchange(
