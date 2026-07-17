@@ -34,6 +34,9 @@ public class User {
     @Column(name = "timezone")
     private String timezone;
 
+    @Column(name = "weekly_target_hours")
+    private Integer weeklyTargetHours;
+
     @CreationTimestamp
     @Column(nullable = false, updatable = false, name = "created_at")
     private Instant createdAt;

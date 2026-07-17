@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
-import { useUpdateTimezone } from '../api/auth';
+import { useUpdateTimezone, useUpdateWeeklyGoal } from '../api/auth';
 
 const COMMON_TIMEZONES = [
   'UTC',
@@ -26,9 +26,12 @@ const COMMON_TIMEZONES = [
 function SettingsPage() {
   const { user, logout } = useAuth();
   const updateTimezone = useUpdateTimezone();
+  const updateWeeklyGoal = useUpdateWeeklyGoal();
 
   const [selectedTz, setSelectedTz] = useState(user?.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone);
   const [tzMessage, setTzMessage] = useState('');
+  const [goalHours, setGoalHours] = useState(user?.weeklyTargetHours ?? 0);
+  const [goalMessage, setGoalMessage] = useState('');
 
   const handleTimezoneChange = async (tz: string) => {
     setSelectedTz(tz);
@@ -38,6 +41,16 @@ function SettingsPage() {
       setTzMessage('Timezone saved');
     } catch {
       setTzMessage('Failed to save timezone');
+    }
+  };
+
+  const handleGoalSave = async () => {
+    setGoalMessage('');
+    try {
+      await updateWeeklyGoal.mutateAsync(goalHours);
+      setGoalMessage('Weekly goal saved');
+    } catch {
+      setGoalMessage('Failed to save goal');
     }
   };
 
@@ -85,6 +98,34 @@ function SettingsPage() {
         {tzMessage && (
           <p style={{ marginTop: 8, color: tzMessage.includes('saved') ? '#16a34a' : '#dc2626', fontSize: '0.85rem' }}>
             {tzMessage}
+          </p>
+        )}
+      </article>
+
+      <article className="panel">
+        <h2>Weekly goal</h2>
+        <p className="timer-helper-text" style={{ marginBottom: 12 }}>
+          Set a target number of hours to track each week. Progress appears on the dashboard.
+        </p>
+        <label className="timer-recent-label">
+          Target hours per week
+          <input
+            type="number"
+            className="timer-recent-select"
+            min={0}
+            max={168}
+            value={goalHours}
+            onChange={(e) => setGoalHours(Number(e.target.value))}
+          />
+        </label>
+        <div className="form-actions" style={{ marginTop: 12 }}>
+          <button type="button" className="primary-button" onClick={handleGoalSave}>
+            Save goal
+          </button>
+        </div>
+        {goalMessage && (
+          <p style={{ marginTop: 8, color: goalMessage.includes('saved') ? '#16a34a' : '#dc2626', fontSize: '0.85rem' }}>
+            {goalMessage}
           </p>
         )}
       </article>

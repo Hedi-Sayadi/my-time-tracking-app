@@ -3,7 +3,9 @@ package com.hedi.timetracking.backend.service;
 import com.hedi.timetracking.backend.dto.*;
 import com.hedi.timetracking.backend.exception.ConflictException;
 import com.hedi.timetracking.backend.exception.ResourceNotFoundException;
+import com.hedi.timetracking.backend.model.Task;
 import com.hedi.timetracking.backend.model.User;
+import com.hedi.timetracking.backend.repository.TaskRepository;
 import com.hedi.timetracking.backend.repository.UserRepository;
 import com.hedi.timetracking.backend.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final TaskRepository taskRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     private final AuthenticationManager authenticationManager;
@@ -105,14 +108,68 @@ public class UserService {
         return mapToDto(user);
     }
 
+    @Transactional(readOnly = true)
+    public WeeklyGoalDto getWeeklyGoal() {
+        Long userId = getCurrentUserId();
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        java.time.ZoneId zone = user.getTimezone() != null
+                ? java.time.ZoneId.of(user.getTimezone())
+                : java.time.ZoneId.systemDefault();
+
+        java.time.LocalDate today = java.time.LocalDate.now(zone);
+        java.time.LocalDate monday = today.with(java.time.DayOfWeek.MONDAY);
+        java.time.LocalDate sunday = today.with(java.time.DayOfWeek.SUNDAY);
+
+        java.time.Instant weekStart = monday.atStartOfDay(zone).toInstant();
+        java.time.Instant weekEnd = sunday.plusDays(1).atStartOfDay(zone).toInstant();
+
+        long spentSeconds = taskRepository.findByUserId(userId).stream()
+                .filter(t -> !t.getStartTime().isBefore(weekStart) && t.getStartTime().isBefore(weekEnd))
+                .mapToLong(Task::getDurationSeconds)
+                .sum();
+
+        int targetHours = user.getWeeklyTargetHours() != null ? user.getWeeklyTargetHours() : 0;
+        double progressPercent = targetHours > 0
+                ? (spentSeconds / 3600.0 / targetHours) * 100
+                : 0;
+
+        WeeklyGoalDto dto = new WeeklyGoalDto();
+        dto.setTargetHours(targetHours);
+        dto.setSpentSeconds(spentSeconds);
+        dto.setProgressPercent(progressPercent);
+        dto.setWeekStart(monday.toString());
+        dto.setWeekEnd(sunday.toString());
+        return dto;
+    }
+
+    @Transactional
+    public UserDto updateWeeklyTarget(Integer targetHours) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        user.setWeeklyTargetHours(targetHours);
+        user = userRepository.save(user);
+        return mapToDto(user);
+    }
+
     private UserDto mapToDto(User user) {
         UserDto dto = new UserDto();
         dto.setId(user.getId());
         dto.setUsername(user.getUsername());
         dto.setEmail(user.getEmail());
         dto.setTimezone(user.getTimezone());
+        dto.setWeeklyTargetHours(user.getWeeklyTargetHours());
         dto.setCreatedAt(user.getCreatedAt());
         return dto;
+    }
+
+    private Long getCurrentUserId() {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"))
+                .getId();
     }
 
 }
