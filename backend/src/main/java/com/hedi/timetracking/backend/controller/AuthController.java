@@ -35,4 +35,9 @@ public class AuthController {
         return ResponseEntity.ok().build();
     }
 
+    @PutMapping("/timezone")
+    public ResponseEntity<UserDto> updateTimezone(@Valid @RequestBody TimezoneRequest request) {
+        return ResponseEntity.ok(userService.updateTimezone(request));
+    }
+
 }

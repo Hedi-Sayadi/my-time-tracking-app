@@ -95,11 +95,22 @@ public class UserService {
         userRepository.save(user);
     }
 
+    @Transactional
+    public UserDto updateTimezone(TimezoneRequest request) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        user.setTimezone(request.getTimezone());
+        user = userRepository.save(user);
+        return mapToDto(user);
+    }
+
     private UserDto mapToDto(User user) {
         UserDto dto = new UserDto();
         dto.setId(user.getId());
         dto.setUsername(user.getUsername());
         dto.setEmail(user.getEmail());
+        dto.setTimezone(user.getTimezone());
         dto.setCreatedAt(user.getCreatedAt());
         return dto;
     }
