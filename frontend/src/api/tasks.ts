@@ -74,6 +74,20 @@ export const useStopTask = () => {
   });
 };
 
+export const useResumeTask = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: number): Promise<Task> => {
+      const response = await apiClient.post(`/tasks/${id}/resume`);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['tasks'] });
+      queryClient.invalidateQueries({ queryKey: ['tasks', 'active'] });
+    },
+  });
+};
+
 export const useCreateTask = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -130,5 +144,34 @@ export const useTaskOverview = (period: string) => {
       const response = await apiClient.get(`/tasks/overview?period=${period}`);
       return response.data;
     },
+  });
+};
+
+export interface ProjectTime {
+  projectId: number;
+  projectName: string;
+  totalDurationSeconds: number;
+  taskCount: number;
+}
+
+export const useProjectTime = (projectId: number, from: string, to: string) => {
+  return useQuery({
+    queryKey: ['projects', projectId, 'time', from, to],
+    queryFn: async (): Promise<ProjectTime> => {
+      const response = await apiClient.get(`/tasks/projects/${projectId}/time?from=${from}&to=${to}`);
+      return response.data;
+    },
+    enabled: !!projectId && !!from && !!to,
+  });
+};
+
+export const useProjectTasks = (projectId: number, from: string, to: string) => {
+  return useQuery({
+    queryKey: ['projects', projectId, 'tasks', from, to],
+    queryFn: async (): Promise<Task[]> => {
+      const response = await apiClient.get(`/tasks/projects/${projectId}/tasks?from=${from}&to=${to}`);
+      return response.data;
+    },
+    enabled: !!projectId && !!from && !!to,
   });
 };

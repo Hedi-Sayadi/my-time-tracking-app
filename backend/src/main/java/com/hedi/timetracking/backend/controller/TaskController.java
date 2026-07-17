@@ -35,13 +35,18 @@ public class TaskController {
     }
 
     @PostMapping("/start")
-    public ResponseEntity<TaskDto> startTask(@Valid @RequestBody TaskRequest request) {
+    public ResponseEntity<TaskDto> startTask(@Valid @RequestBody StartTaskRequest request) {
         return ResponseEntity.ok(taskService.startTask(request));
     }
 
     @PostMapping("/{id}/stop")
     public ResponseEntity<TaskDto> stopTask(@PathVariable Long id) {
         return ResponseEntity.ok(taskService.stopTask(id));
+    }
+
+    @PostMapping("/{id}/resume")
+    public ResponseEntity<TaskDto> resumeTask(@PathVariable Long id) {
+        return ResponseEntity.ok(taskService.resumeTask(id));
     }
 
     @PostMapping
@@ -71,6 +76,14 @@ public class TaskController {
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant from,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant to) {
         return ResponseEntity.ok(taskService.getProjectTime(projectId, from, to));
+    }
+
+    @GetMapping("/projects/{projectId}/tasks")
+    public ResponseEntity<List<TaskDto>> getProjectTasks(
+            @PathVariable Long projectId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant from,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant to) {
+        return ResponseEntity.ok(taskService.getProjectTasks(projectId, from, to));
     }
 
 }

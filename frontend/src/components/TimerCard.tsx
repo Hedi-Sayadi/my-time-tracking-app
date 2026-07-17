@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
-import { useActiveTask, useStartTask, useStopTask } from '../api/tasks';
+import { useActiveTask, useStartTask, useStopTask, useResumeTask, useTasks } from '../api/tasks';
+import { useProjects } from '../api/projects';
+import type { Task } from '../api/tasks';
 
 function formatDuration(seconds: number): string {
   const h = Math.floor(seconds / 3600);
@@ -12,8 +14,14 @@ function TimerCard() {
   const { data: activeTask, isLoading } = useActiveTask();
   const startTask = useStartTask();
   const stopTask = useStopTask();
+  const resumeTask = useResumeTask();
+  const { data: projects } = useProjects();
+  const { data: allTasks } = useTasks();
+
   const [description, setDescription] = useState('');
+  const [projectIds, setProjectIds] = useState<number[]>([]);
   const [elapsed, setElapsed] = useState(0);
+  const [pausedTask, setPausedTask] = useState<Task | null>(null);
 
   useEffect(() => {
     if (!activeTask?.running) {
@@ -30,13 +38,49 @@ function TimerCard() {
   }, [activeTask]);
 
   const handleStart = async () => {
-    await startTask.mutateAsync({ description: description || 'Untitled task' });
+    await startTask.mutateAsync({
+      description: description || 'Untitled task',
+      projectIds: projectIds.length > 0 ? projectIds : undefined,
+    });
     setDescription('');
+    setProjectIds([]);
+    setPausedTask(null);
   };
 
   const handleStop = async () => {
     if (activeTask) {
-      await stopTask.mutateAsync(activeTask.id);
+      const stopped = await stopTask.mutateAsync(activeTask.id);
+      setPausedTask(stopped);
+    }
+  };
+
+  const handleResume = async () => {
+    if (pausedTask) {
+      await resumeTask.mutateAsync(pausedTask.id);
+      setPausedTask(null);
+    }
+  };
+
+  const handleLogTime = () => {
+    setPausedTask(null);
+  };
+
+  const toggleProject = (id: number) => {
+    setProjectIds((prev) =>
+      prev.includes(id) ? prev.filter((pid) => pid !== id) : [...prev, id]
+    );
+  };
+
+  const selectRecentTask = (taskId: number) => {
+    if (taskId === 0) {
+      setDescription('');
+      setProjectIds([]);
+      return;
+    }
+    const task = allTasks?.find((t) => t.id === taskId);
+    if (task) {
+      setDescription(task.description);
+      setProjectIds(task.projects.map((p) => p.id));
     }
   };
 
@@ -49,26 +93,104 @@ function TimerCard() {
   }
 
   const isRunning = !!activeTask?.running;
+  const isPaused = !!pausedTask && !isRunning;
+
+  const recentTasks = allTasks
+    ? [...allTasks]
+        .sort((a, b) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime())
+        .slice(0, 10)
+    : [];
 
   return (
     <section className="hero-card timer-card" aria-label="Active timer">
-      <div>
-        <p className="eyebrow">{isRunning ? 'Active task' : 'No active task'}</p>
-        <h2>{isRunning ? activeTask!.description : 'Ready to start tracking'}</h2>
-      </div>
+      {isRunning ? (
+        <div className="timer-info">
+          <p className="timer-label">Recording time for</p>
+          <h2 className="timer-task-name">{activeTask!.description}</h2>
+          {activeTask!.projects.length > 0 && (
+            <div className="timer-projects">
+              {activeTask!.projects.map((p) => (
+                <span key={p.id} className="project-pill">{p.name}</span>
+              ))}
+            </div>
+          )}
+        </div>
+      ) : isPaused ? (
+        <div className="timer-info">
+          <p className="timer-label">Timer paused</p>
+          <h2 className="timer-task-name">{pausedTask.description}</h2>
+          {pausedTask.projects.length > 0 && (
+            <div className="timer-projects">
+              {pausedTask.projects.map((p) => (
+                <span key={p.id} className="project-pill">{p.name}</span>
+              ))}
+            </div>
+          )}
+        </div>
+      ) : (
+        <div>
+          <p className="eyebrow">No active task</p>
+          <h2>Ready to start tracking</h2>
+        </div>
+      )}
 
       <div className="timer-display">
-        <span>{isRunning ? formatDuration(elapsed) : '00:00:00'}</span>
-        <small>{isRunning ? 'Running now' : 'Timer stopped'}</small>
+        <span>
+          {isRunning
+            ? formatDuration(elapsed)
+            : isPaused
+              ? formatDuration(pausedTask!.durationSeconds)
+              : '00:00:00'}
+        </span>
+        <small>
+          {isRunning ? 'Timer running' : isPaused ? 'Paused' : 'Ready'}
+        </small>
       </div>
 
       <div className="timer-actions">
         {isRunning ? (
-          <button type="button" className="primary-button" onClick={handleStop} disabled={stopTask.isPending}>
+          <button type="button" className="stop-button" onClick={handleStop} disabled={stopTask.isPending}>
             {stopTask.isPending ? 'Stopping...' : 'Stop timer'}
           </button>
+        ) : isPaused ? (
+          <div className="timer-pause-actions">
+            <button type="button" className="primary-button" onClick={handleResume} disabled={resumeTask.isPending}>
+              {resumeTask.isPending ? 'Resuming...' : 'Resume'}
+            </button>
+            <button type="button" className="secondary-button" onClick={handleLogTime}>
+              Log time
+            </button>
+          </div>
         ) : (
           <>
+            {recentTasks.length > 0 && (
+              <div className="timer-recent-tasks">
+                <label className="timer-recent-label">
+                  Or continue a recent task
+                  <select
+                    className="timer-recent-select"
+                    onChange={(e) => selectRecentTask(Number(e.target.value))}
+                    value={
+                      allTasks?.find(
+                        (t) =>
+                          t.description === description &&
+                          t.projects.length === projectIds.length &&
+                          t.projects.every((p) => projectIds.includes(p.id))
+                      )?.id ?? 0
+                    }
+                  >
+                    <option value={0}>— New task —</option>
+                    {recentTasks.map((task) => (
+                      <option key={task.id} value={task.id}>
+                        {task.description}
+                        {task.projects.length > 0 ? ` (${task.projects.map((p) => p.name).join(', ')})` : ''}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              </div>
+            )}
+
             <input
               type="text"
               placeholder="What are you working on?"
@@ -76,15 +198,34 @@ function TimerCard() {
               onChange={(e) => setDescription(e.target.value)}
               className="timer-input"
             />
-            <button type="button" className="primary-button" onClick={handleStart} disabled={startTask.isPending}>
-              {startTask.isPending ? 'Starting...' : 'Start timer'}
-            </button>
+
+            {projects && projects.length > 0 && (
+              <div className="timer-project-select">
+                <span className="timer-project-label">Projects:</span>
+                <div className="timer-project-checkboxes">
+                  {projects.map((project) => (
+                    <label key={project.id} className="project-checkbox-inline">
+                      <input
+                        type="checkbox"
+                        checked={projectIds.includes(project.id)}
+                        onChange={() => toggleProject(project.id)}
+                      />
+                      {project.name}
+                    </label>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className="timer-main-actions">
+              <button type="button" className="primary-button" onClick={handleStart} disabled={startTask.isPending}>
+                {startTask.isPending ? 'Starting...' : 'Start timer'}
+              </button>
+              <button type="button" className="secondary-button" onClick={() => window.location.href = '/tasks'}>
+                Add entry
+              </button>
+            </div>
           </>
-        )}
-        {!isRunning && (
-          <button type="button" className="secondary-button" onClick={() => window.location.href = '/tasks'}>
-            Add entry
-          </button>
         )}
       </div>
     </section>

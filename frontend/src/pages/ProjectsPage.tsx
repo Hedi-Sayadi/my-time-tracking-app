@@ -1,11 +1,6 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useProjects, useCreateProject, useUpdateProject, useDeleteProject, type Project } from '../api/projects';
-
-function formatDuration(seconds: number): string {
-  const h = Math.floor(seconds / 3600);
-  const m = Math.floor((seconds % 3600) / 60);
-  return `${h}h ${m}m`;
-}
 
 function ProjectItem({
   project,
@@ -19,6 +14,7 @@ function ProjectItem({
   onEdit: (p: Project) => void;
 }) {
   const deleteProject = useDeleteProject();
+  const navigate = useNavigate();
   const subprojects = allProjects.filter((p) => p.parentId === project.id);
 
   return (
@@ -29,6 +25,13 @@ function ProjectItem({
           {project.description && <p>{project.description}</p>}
         </div>
         <div className="row-actions">
+          <button
+            type="button"
+            className="primary-button small"
+            onClick={() => navigate(`/projects/${project.id}`)}
+          >
+            View
+          </button>
           <button type="button" className="secondary-button small" onClick={() => onEdit(project)}>
             Edit
           </button>
