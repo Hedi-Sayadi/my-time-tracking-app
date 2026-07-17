@@ -162,15 +162,26 @@ public class ProjectService {
             throw new ResourceNotFoundException("Project not found");
         }
 
-        List<Object[]> rows = taskRepository.aggregateTimeByUserForProject(projectId);
-        return rows.stream().map(row -> {
-            MemberContributionDto dto = new MemberContributionDto();
-            dto.setUserId((Long) row[0]);
-            dto.setUsername((String) row[1]);
-            dto.setTaskCount(((Long) row[2]).intValue());
-            dto.setTotalDurationSeconds((Long) row[3]);
-            return dto;
-        }).toList();
+        List<Task> tasks = taskRepository.findAllByProjectId(projectId);
+        return tasks.stream()
+                .collect(java.util.stream.Collectors.groupingBy(
+                        t -> t.getUser().getId(),
+                        java.util.LinkedHashMap::new,
+                        java.util.stream.Collectors.collectingAndThen(
+                                java.util.stream.Collectors.toList(),
+                                list -> {
+                                    MemberContributionDto dto = new MemberContributionDto();
+                                    dto.setUserId(list.get(0).getUser().getId());
+                                    dto.setUsername(list.get(0).getUser().getUsername());
+                                    dto.setTaskCount(list.size());
+                                    dto.setTotalDurationSeconds(list.stream().mapToLong(Task::getDurationSeconds).sum());
+                                    return dto;
+                                }
+                        )
+                ))
+                .values()
+                .stream()
+                .toList();
     }
 
     @Transactional(readOnly = true)
