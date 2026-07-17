@@ -19,7 +19,7 @@ class JwtUtilTest {
     @BeforeEach
     void setUp() {
         jwtProperties = new JwtProperties();
-        jwtProperties.setSecret("dGVzdC1zZWNyZXQta2V5LXRlc3Qtc2VjcmV0LWtleS10ZXN0LXNlY3JldC1rZXk=");
+        jwtProperties.setSecret("test-secret-key-test-secret-key-test-secret-key");
         jwtProperties.setExpirationMs(3600000);
         jwtUtil = new JwtUtil(jwtProperties);
     }
