@@ -1,5 +1,4 @@
 import { NavLink } from 'react-router-dom'
-import { useAuth } from '../hooks/useAuth'
 
 type AppSidebarItem = {
   label: string
@@ -16,8 +15,6 @@ const navigationItems: AppSidebarItem[] = [
 ]
 
 function AppSidebar() {
-  const { user } = useAuth()
-
   return (
     <aside className="sidebar-panel" aria-label="Navigation">
       <div className="sidebar-brand">
@@ -41,14 +38,6 @@ function AppSidebar() {
           </NavLink>
         ))}
       </nav>
-
-      <div className="sidebar-footer">
-        {user && (
-          <div className="user-info">
-            <span>{user.username}</span>
-          </div>
-        )}
-      </div>
     </aside>
   )
 }
