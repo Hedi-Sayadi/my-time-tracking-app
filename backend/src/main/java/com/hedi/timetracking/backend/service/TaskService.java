@@ -200,7 +200,7 @@ public class TaskService {
     @Transactional(readOnly = true)
     public ProjectTimeDto getProjectTime(Long projectId, Instant from, Instant to) {
         Long userId = getCurrentUserId();
-        Project project = projectRepository.findByIdAndUserId(projectId, userId)
+        Project project = projectRepository.findAccessibleById(userId, projectId)
                 .orElseThrow(() -> new ResourceNotFoundException("Project not found"));
 
         // Find all tasks linked to this project or any of its subprojects, deduplicated
@@ -221,7 +221,7 @@ public class TaskService {
     @Transactional(readOnly = true)
     public List<TaskDto> getProjectTasks(Long projectId, Instant from, Instant to) {
         Long userId = getCurrentUserId();
-        projectRepository.findByIdAndUserId(projectId, userId)
+        projectRepository.findAccessibleById(userId, projectId)
                 .orElseThrow(() -> new ResourceNotFoundException("Project not found"));
 
         // Deduplicated tasks for this project and its subprojects
@@ -237,7 +237,7 @@ public class TaskService {
             return;
         }
         for (Long projectId : projectIds) {
-            Project project = projectRepository.findByIdAndUserId(projectId, userId)
+            Project project = projectRepository.findAccessibleById(userId, projectId)
                     .orElseThrow(() -> new ResourceNotFoundException("Project not found: " + projectId));
             TaskProject tp = TaskProject.builder()
                     .task(task)

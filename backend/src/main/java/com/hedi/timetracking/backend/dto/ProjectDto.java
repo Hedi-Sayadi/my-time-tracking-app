@@ -15,6 +15,9 @@ public class ProjectDto {
     private String description;
     private Long parentId;
     private List<ProjectDto> subprojects;
+    private Long ownerId;
+    private String ownerUsername;
+    private List<ProjectMemberDto> members;
     private Instant createdAt;
 
 }

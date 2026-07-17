@@ -695,3 +695,42 @@ select {
     font-size: 0.88rem;
   }
 }
+
+.project-meta {
+	color: #64748b;
+	font-size: 0.9rem;
+	margin-top: 4px;
+}
+
+.project-meta strong {
+	color: #1d4ed8;
+}
+
+.share-form {
+	display: grid;
+	gap: 10px;
+}
+
+.share-form-row {
+	display: flex;
+	gap: 10px;
+	flex-wrap: wrap;
+	align-items: center;
+}
+
+.share-input {
+	flex: 1;
+	min-width: 200px;
+	padding: 0.72rem 1rem;
+	border: 1px solid #bfdbfe;
+	border-radius: 999px;
+	font: inherit;
+	font-size: 0.95rem;
+}
+
+.member-list h3 {
+	color: #0f172a;
+	font-size: 1rem;
+	font-weight: 600;
+	margin: 0 0 8px;
+}

@@ -1,7 +1,9 @@
 package com.hedi.timetracking.backend.controller;
 
 import com.hedi.timetracking.backend.dto.ProjectDto;
+import com.hedi.timetracking.backend.dto.ProjectMemberDto;
 import com.hedi.timetracking.backend.dto.ProjectRequest;
+import com.hedi.timetracking.backend.dto.ShareProjectRequest;
 import com.hedi.timetracking.backend.service.ProjectService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -41,6 +43,22 @@ public class ProjectController {
     public ResponseEntity<Void> deleteProject(@PathVariable Long id) {
         projectService.deleteProject(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{id}/share")
+    public ResponseEntity<ProjectMemberDto> shareProject(@PathVariable Long id, @Valid @RequestBody ShareProjectRequest request) {
+        return ResponseEntity.ok(projectService.shareProject(id, request));
+    }
+
+    @DeleteMapping("/{id}/share/{userId}")
+    public ResponseEntity<Void> unshareProject(@PathVariable Long id, @PathVariable Long userId) {
+        projectService.unshareProject(id, userId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{id}/members")
+    public ResponseEntity<List<ProjectMemberDto>> getProjectMembers(@PathVariable Long id) {
+        return ResponseEntity.ok(projectService.getProjectMembers(id));
     }
 
 }
