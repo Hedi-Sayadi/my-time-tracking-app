@@ -142,3 +142,22 @@ export const useProjectBudget = (id: number) => {
     enabled: !!id,
   });
 };
+
+export interface MemberContribution {
+  userId: number;
+  username: string;
+  totalDurationSeconds: number;
+  taskCount: number;
+  joinedAt: string;
+}
+
+export const useProjectTeam = (id: number) => {
+  return useQuery({
+    queryKey: ['projects', id, 'team'],
+    queryFn: async (): Promise<MemberContribution[]> => {
+      const response = await apiClient.get(`/projects/${id}/team`);
+      return response.data;
+    },
+    enabled: !!id,
+  });
+};
