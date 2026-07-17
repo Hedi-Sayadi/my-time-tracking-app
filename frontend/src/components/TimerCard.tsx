@@ -198,6 +198,9 @@ function TimerCard() {
               onChange={(e) => setDescription(e.target.value)}
               className="timer-input"
             />
+            <p className="timer-helper-text">
+              Start the timer for live tracking, or use Add entry to log past time manually.
+            </p>
 
             {projects && projects.length > 0 && (
               <div className="timer-project-select">
@@ -221,7 +224,12 @@ function TimerCard() {
               <button type="button" className="primary-button" onClick={handleStart} disabled={startTask.isPending}>
                 {startTask.isPending ? 'Starting...' : 'Start timer'}
               </button>
-              <button type="button" className="secondary-button" onClick={() => window.location.href = '/tasks'}>
+              <button
+                type="button"
+                className="secondary-button"
+                onClick={() => window.location.href = '/tasks'}
+                title="Manually log a past or offline time entry"
+              >
                 Add entry
               </button>
             </div>

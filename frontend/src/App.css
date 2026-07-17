@@ -267,6 +267,13 @@
 	outline-offset: 2px;
 }
 
+.timer-helper-text {
+	color: #64748b;
+	font-size: 0.85rem;
+	margin: 0;
+	margin-top: -4px;
+}
+
 .timer-pause-actions {
 	display: flex;
 	gap: 10px;
