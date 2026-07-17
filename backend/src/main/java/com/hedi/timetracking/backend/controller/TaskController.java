@@ -99,6 +99,8 @@ public class TaskController {
         List<TaskDto> tasks = taskService.exportProjectTasks(projectId, from, to);
 
         StringBuilder csv = new StringBuilder();
+        // UTF-8 BOM for Excel compatibility
+        csv.append('\uFEFF');
         csv.append("ID,Description,Start Time,End Time,Duration (seconds),Projects,User,Running\n");
 
         for (TaskDto task : tasks) {
@@ -117,7 +119,7 @@ public class TaskController {
         }
 
         HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.parseMediaType("text/csv"));
+        headers.setContentType(MediaType.parseMediaType("text/csv; charset=UTF-8"));
         headers.setContentDispositionFormData("attachment", "project-tasks.csv");
 
         return ResponseEntity.ok()
@@ -127,7 +129,7 @@ public class TaskController {
 
     private String escapeCsv(String value) {
         if (value == null) return "";
-        return value.replace("\"", "\"\"");
+        return value.replace("\"", "\"\"").replace("\r", " ").replace("\n", " ");
     }
 
 }
