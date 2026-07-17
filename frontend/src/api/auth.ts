@@ -5,6 +5,7 @@ export interface User {
   id: number;
   username: string;
   email: string;
+  timezone: string | null;
   createdAt: string;
 }
 
@@ -28,6 +29,10 @@ export interface RegisterRequest {
 export interface ChangePasswordRequest {
   oldPassword: string;
   newPassword: string;
+}
+
+export interface TimezoneRequest {
+  timezone: string;
 }
 
 export const useLogin = () => {
@@ -64,6 +69,19 @@ export const useChangePassword = () => {
   return useMutation({
     mutationFn: async (data: ChangePasswordRequest) => {
       await apiClient.put('/auth/password', data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['me'] });
+    },
+  });
+};
+
+export const useUpdateTimezone = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (data: TimezoneRequest): Promise<User> => {
+      const response = await apiClient.put('/auth/timezone', data);
+      return response.data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['me'] });

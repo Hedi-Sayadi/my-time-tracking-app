@@ -1,5 +1,7 @@
 import { useState } from 'react';
+import { useAuth } from '../hooks/useAuth';
 import { useTaskOverview, type Task } from '../api/tasks';
+import { formatTime } from '../utils/datetime';
 
 function formatDuration(seconds: number): string {
   const h = Math.floor(seconds / 3600);
@@ -7,11 +9,8 @@ function formatDuration(seconds: number): string {
   return `${h}h ${m}m`;
 }
 
-function formatTime(iso: string): string {
-  return new Date(iso).toLocaleString();
-}
-
 function ReportsPage() {
+  const { user } = useAuth();
   const [period, setPeriod] = useState<'today' | 'week' | 'month'>('today');
   const { data: overview, isLoading } = useTaskOverview(period);
 
@@ -58,8 +57,8 @@ function ReportsPage() {
                     <div>
                       <strong>{task.description}</strong>
                       <p>
-                        {formatTime(task.startTime)}
-                        {task.endTime && ` → ${formatTime(task.endTime)}`}
+                        {formatTime(task.startTime, user?.timezone)}
+                        {task.endTime && ` → ${formatTime(task.endTime, user?.timezone)}`}
                         {' '}
                         ({formatDuration(task.durationSeconds)})
                       </p>

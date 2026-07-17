@@ -1,9 +1,9 @@
 import { createContext, useContext, useState, useCallback, type ReactNode } from 'react';
-import { useCurrentUser } from '../api/auth';
+import { useCurrentUser, type User } from '../api/auth';
 
 interface AuthContextType {
   isAuthenticated: boolean;
-  user: { id: number; username: string; email: string } | null;
+  user: User | null;
   login: (token: string) => void;
   logout: () => void;
 }

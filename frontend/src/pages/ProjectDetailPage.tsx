@@ -3,15 +3,12 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { useProject, useProjectMembers, useShareProject, useUnshareProject } from '../api/projects';
 import { useProjectTime, useProjectTasks, exportProjectTasks } from '../api/tasks';
+import { formatTime } from '../utils/datetime';
 
 function formatDuration(seconds: number): string {
   const h = Math.floor(seconds / 3600);
   const m = Math.floor((seconds % 3600) / 60);
   return `${h}h ${m}m`;
-}
-
-function formatTime(iso: string): string {
-  return new Date(iso).toLocaleString();
 }
 
 function toISOLocal(d: Date): string {
@@ -259,8 +256,8 @@ function ProjectDetailPage() {
                     <tr key={task.id}>
                       <td>{task.description}</td>
                       <td>{task.username}</td>
-                      <td>{formatTime(task.startTime)}</td>
-                      <td>{task.endTime ? formatTime(task.endTime) : 'Running'}</td>
+                      <td>{formatTime(task.startTime, user?.timezone)}</td>
+                      <td>{task.endTime ? formatTime(task.endTime, user?.timezone) : 'Running'}</td>
                       <td>{formatDuration(task.durationSeconds)}</td>
                       <td>{task.projects.map((p) => p.name).join(', ') || '-'}</td>
                     </tr>
