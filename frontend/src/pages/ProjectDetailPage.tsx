@@ -28,18 +28,21 @@ function ProjectDetailPage() {
   const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
   const [from, setFrom] = useState(toISOLocal(weekAgo));
   const [to, setTo] = useState(toISOLocal(today));
+  const [filterUserId, setFilterUserId] = useState<number | null>(null);
 
   const { data: project, isLoading: projectLoading } = useProject(projectId);
   const { data: members, isLoading: membersLoading } = useProjectMembers(projectId);
   const { data: timeData, isLoading: timeLoading } = useProjectTime(
     projectId,
     new Date(from).toISOString(),
-    new Date(to).toISOString()
+    new Date(to).toISOString(),
+    filterUserId
   );
   const { data: tasks, isLoading: tasksLoading } = useProjectTasks(
     projectId,
     new Date(from).toISOString(),
-    new Date(to).toISOString()
+    new Date(to).toISOString(),
+    filterUserId
   );
 
   const shareProject = useShareProject();
@@ -50,6 +53,11 @@ function ProjectDetailPage() {
 
   const isLoading = projectLoading || timeLoading || tasksLoading || membersLoading;
   const isOwner = project?.ownerId === user?.id;
+
+  // Collect unique users from tasks for the filter dropdown
+  const uniqueUsers = tasks
+    ? Array.from(new Map(tasks.map((t) => [t.userId, { id: t.userId, username: t.username }])).values())
+    : [];
 
   const handleShare = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -185,7 +193,7 @@ function ProjectDetailPage() {
             <article className="metric-card">
               <span>Total time</span>
               <strong>{formatDuration(timeData?.totalDurationSeconds ?? 0)}</strong>
-              <p>In selected range</p>
+              <p>{filterUserId ? 'For selected user' : 'Across all users'}</p>
             </article>
             <article className="metric-card">
               <span>Tasks</span>
@@ -195,12 +203,30 @@ function ProjectDetailPage() {
           </div>
 
           <article className="panel">
-            <h2>Tracked tasks</h2>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
+              <h2 style={{ margin: 0 }}>Tracked tasks</h2>
+              {uniqueUsers.length > 0 && (
+                <label className="timer-recent-label" style={{ maxWidth: 280 }}>
+                  Filter by user
+                  <select
+                    className="timer-recent-select"
+                    value={filterUserId ?? ''}
+                    onChange={(e) => setFilterUserId(e.target.value ? Number(e.target.value) : null)}
+                  >
+                    <option value="">All users</option>
+                    {uniqueUsers.map((u) => (
+                      <option key={u.id} value={u.id}>{u.username}</option>
+                    ))}
+                  </select>
+                </label>
+              )}
+            </div>
             {tasks && tasks.length > 0 ? (
               <table className="data-table">
                 <thead>
                   <tr>
                     <th>Description</th>
+                    <th>User</th>
                     <th>Start</th>
                     <th>End</th>
                     <th>Duration</th>
@@ -211,6 +237,7 @@ function ProjectDetailPage() {
                   {tasks.map((task) => (
                     <tr key={task.id}>
                       <td>{task.description}</td>
+                      <td>{task.username}</td>
                       <td>{formatTime(task.startTime)}</td>
                       <td>{task.endTime ? formatTime(task.endTime) : 'Running'}</td>
                       <td>{formatDuration(task.durationSeconds)}</td>

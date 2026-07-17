@@ -17,6 +17,8 @@ public class TaskDto {
     private Boolean running;
     private Long durationSeconds;
     private Set<ProjectDto> projects;
+    private Long userId;
+    private String username;
     private Instant createdAt;
     private Instant updatedAt;
 

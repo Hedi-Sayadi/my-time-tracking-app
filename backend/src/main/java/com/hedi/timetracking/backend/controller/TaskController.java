@@ -74,16 +74,18 @@ public class TaskController {
     public ResponseEntity<ProjectTimeDto> getProjectTime(
             @PathVariable Long projectId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant from,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant to) {
-        return ResponseEntity.ok(taskService.getProjectTime(projectId, from, to));
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant to,
+            @RequestParam(required = false) Long userId) {
+        return ResponseEntity.ok(taskService.getProjectTime(projectId, from, to, userId));
     }
 
     @GetMapping("/projects/{projectId}/tasks")
     public ResponseEntity<List<TaskDto>> getProjectTasks(
             @PathVariable Long projectId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant from,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant to) {
-        return ResponseEntity.ok(taskService.getProjectTasks(projectId, from, to));
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant to,
+            @RequestParam(required = false) Long userId) {
+        return ResponseEntity.ok(taskService.getProjectTasks(projectId, from, to, userId));
     }
 
 }

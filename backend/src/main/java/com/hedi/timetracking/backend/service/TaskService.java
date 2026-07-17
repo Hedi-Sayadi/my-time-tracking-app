@@ -198,14 +198,19 @@ public class TaskService {
     }
 
     @Transactional(readOnly = true)
-    public ProjectTimeDto getProjectTime(Long projectId, Instant from, Instant to) {
+    public ProjectTimeDto getProjectTime(Long projectId, Instant from, Instant to, Long filterUserId) {
         Long userId = getCurrentUserId();
         Project project = projectRepository.findAccessibleById(userId, projectId)
                 .orElseThrow(() -> new ResourceNotFoundException("Project not found"));
 
-        // Find all tasks linked to this project or any of its subprojects, deduplicated
-        Set<Task> tasks = new HashSet<>(taskRepository.findByProjectOrSubprojectsAndTimeRange(projectId, userId, from, to));
+        List<Task> taskList;
+        if (filterUserId != null) {
+            taskList = taskRepository.findByProjectOrSubprojectsAndTimeRangeAndUserId(projectId, filterUserId, from, to);
+        } else {
+            taskList = taskRepository.findAllByProjectOrSubprojectsAndTimeRange(projectId, from, to);
+        }
 
+        Set<Task> tasks = new HashSet<>(taskList);
         long totalSeconds = tasks.stream()
                 .mapToLong(Task::getDurationSeconds)
                 .sum();
@@ -219,13 +224,19 @@ public class TaskService {
     }
 
     @Transactional(readOnly = true)
-    public List<TaskDto> getProjectTasks(Long projectId, Instant from, Instant to) {
+    public List<TaskDto> getProjectTasks(Long projectId, Instant from, Instant to, Long filterUserId) {
         Long userId = getCurrentUserId();
         projectRepository.findAccessibleById(userId, projectId)
                 .orElseThrow(() -> new ResourceNotFoundException("Project not found"));
 
-        // Deduplicated tasks for this project and its subprojects
-        Set<Task> tasks = new HashSet<>(taskRepository.findByProjectOrSubprojectsAndTimeRange(projectId, userId, from, to));
+        List<Task> taskList;
+        if (filterUserId != null) {
+            taskList = taskRepository.findByProjectOrSubprojectsAndTimeRangeAndUserId(projectId, filterUserId, from, to);
+        } else {
+            taskList = taskRepository.findAllByProjectOrSubprojectsAndTimeRange(projectId, from, to);
+        }
+
+        Set<Task> tasks = new HashSet<>(taskList);
         return tasks.stream()
                 .sorted(Comparator.comparing(Task::getStartTime).reversed())
                 .map(this::mapToDto)
@@ -263,6 +274,8 @@ public class TaskService {
                     return pd;
                 })
                 .collect(Collectors.toSet()));
+        dto.setUserId(task.getUser().getId());
+        dto.setUsername(task.getUser().getUsername());
         dto.setCreatedAt(task.getCreatedAt());
         dto.setUpdatedAt(task.getUpdatedAt());
         return dto;

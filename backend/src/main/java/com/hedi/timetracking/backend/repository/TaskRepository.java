@@ -20,16 +20,15 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     Optional<Task> findByUserIdAndRunningTrue(Long userId);
 
     @Query("""
-        SELECT t FROM Task t
+        SELECT DISTINCT t FROM Task t
         JOIN t.taskProjects tp
-        WHERE tp.project.id = :projectId
-        AND t.user.id = :userId
+        JOIN tp.project p
+        WHERE (p.id = :projectId OR p.parent.id = :projectId)
         AND t.startTime >= :from
         AND (t.endTime IS NULL OR t.endTime <= :to)
         """)
-    List<Task> findByProjectAndTimeRange(
+    List<Task> findAllByProjectOrSubprojectsAndTimeRange(
             @Param("projectId") Long projectId,
-            @Param("userId") Long userId,
             @Param("from") Instant from,
             @Param("to") Instant to);
 
@@ -37,12 +36,12 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
         SELECT DISTINCT t FROM Task t
         JOIN t.taskProjects tp
         JOIN tp.project p
-        WHERE t.user.id = :userId
-        AND (p.id = :projectId OR p.parent.id = :projectId)
+        WHERE (p.id = :projectId OR p.parent.id = :projectId)
+        AND t.user.id = :userId
         AND t.startTime >= :from
         AND (t.endTime IS NULL OR t.endTime <= :to)
         """)
-    List<Task> findByProjectOrSubprojectsAndTimeRange(
+    List<Task> findByProjectOrSubprojectsAndTimeRangeAndUserId(
             @Param("projectId") Long projectId,
             @Param("userId") Long userId,
             @Param("from") Instant from,
