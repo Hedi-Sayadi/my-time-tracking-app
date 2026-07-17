@@ -2,6 +2,41 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useProjects, useCreateProject, useUpdateProject, useDeleteProject, type Project } from '../api/projects';
 
+function BudgetBar({ budgetHours, spentSeconds }: { budgetHours: number | null; spentSeconds: number | null }) {
+  if (!budgetHours || budgetHours <= 0) return null;
+  const spentHours = (spentSeconds ?? 0) / 3600;
+  const pct = Math.min(100, (spentHours / budgetHours) * 100);
+  const over = spentHours > budgetHours;
+  const warning = pct >= 80 && !over;
+  return (
+    <div className="budget-bar" style={{ marginTop: '6px' }}>
+      <div
+        className="budget-track"
+        style={{
+          height: '6px',
+          background: '#e5e7eb',
+          borderRadius: '3px',
+          overflow: 'hidden',
+        }}
+      >
+        <div
+          className="budget-fill"
+          style={{
+            width: `${pct}%`,
+            height: '100%',
+            background: over ? '#dc2626' : warning ? '#f59e0b' : '#2563eb',
+            borderRadius: '3px',
+            transition: 'width 0.3s ease',
+          }}
+        />
+      </div>
+      <small style={{ color: over ? '#dc2626' : warning ? '#f59e0b' : '#6b7280' }}>
+        {spentHours.toFixed(1)}h / {budgetHours}h {over ? '(over budget)' : warning ? '(approaching limit)' : ''}
+      </small>
+    </div>
+  );
+}
+
 function ProjectItem({
   project,
   depth,
@@ -23,6 +58,7 @@ function ProjectItem({
         <div>
           <strong>{project.name}</strong>
           {project.description && <p>{project.description}</p>}
+          <BudgetBar budgetHours={project.budgetHours} spentSeconds={project.spentSeconds} />
         </div>
         <div className="row-actions">
           <button
@@ -65,6 +101,7 @@ function ProjectsPage() {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [parentId, setParentId] = useState<string>('');
+  const [budgetHours, setBudgetHours] = useState<string>('');
   const [error, setError] = useState('');
 
   const rootProjects = projects?.filter((p) => p.parentId === null) ?? [];
@@ -82,6 +119,7 @@ function ProjectsPage() {
       name: name.trim(),
       description: description.trim() || undefined,
       parentId: parentId ? Number(parentId) : undefined,
+      budgetHours: budgetHours ? Number(budgetHours) : undefined,
     };
 
     try {
@@ -102,6 +140,7 @@ function ProjectsPage() {
     setName('');
     setDescription('');
     setParentId('');
+    setBudgetHours('');
     setError('');
   };
 
@@ -110,6 +149,7 @@ function ProjectsPage() {
     setName(project.name);
     setDescription(project.description || '');
     setParentId(project.parentId?.toString() ?? '');
+    setBudgetHours(project.budgetHours?.toString() ?? '');
     setShowForm(true);
   };
 
@@ -151,6 +191,16 @@ function ProjectsPage() {
                     </option>
                   ))}
               </select>
+            </label>
+            <label>
+              Budget hours (optional)
+              <input
+                type="number"
+                min="0"
+                value={budgetHours}
+                onChange={(e) => setBudgetHours(e.target.value)}
+                placeholder="e.g. 20"
+              />
             </label>
             <div className="form-actions">
               <button type="submit" className="primary-button" disabled={createProject.isPending || updateProject.isPending}>

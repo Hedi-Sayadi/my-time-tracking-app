@@ -17,7 +17,16 @@ export interface Project {
   ownerId: number;
   ownerUsername: string;
   members: ProjectMember[];
+  budgetHours: number | null;
+  spentSeconds: number | null;
   createdAt: string;
+}
+
+export interface ProjectBudget {
+  projectId: number;
+  projectName: string;
+  budgetHours: number | null;
+  spentSeconds: number;
 }
 
 export interface ProjectRequest {
@@ -117,6 +126,17 @@ export const useProjectMembers = (id: number) => {
     queryKey: ['projects', id, 'members'],
     queryFn: async (): Promise<ProjectMember[]> => {
       const response = await apiClient.get(`/projects/${id}/members`);
+      return response.data;
+    },
+    enabled: !!id,
+  });
+};
+
+export const useProjectBudget = (id: number) => {
+  return useQuery({
+    queryKey: ['projects', id, 'budget'],
+    queryFn: async (): Promise<ProjectBudget> => {
+      const response = await apiClient.get(`/projects/${id}/budget`);
       return response.data;
     },
     enabled: !!id,

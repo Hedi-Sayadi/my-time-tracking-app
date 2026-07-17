@@ -18,6 +18,8 @@ public class ProjectDto {
     private Long ownerId;
     private String ownerUsername;
     private List<ProjectMemberDto> members;
+    private Integer budgetHours;
+    private Long spentSeconds;
     private Instant createdAt;
 
 }

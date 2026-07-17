@@ -49,6 +49,9 @@ public class Project {
     @Builder.Default
     private Set<ProjectMember> members = new HashSet<>();
 
+    @Column(name = "budget_hours")
+    private Integer budgetHours;
+
     @CreationTimestamp
     @Column(nullable = false, updatable = false, name = "created_at")
     private Instant createdAt;

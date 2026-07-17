@@ -1,5 +1,6 @@
 package com.hedi.timetracking.backend.controller;
 
+import com.hedi.timetracking.backend.dto.ProjectBudgetDto;
 import com.hedi.timetracking.backend.dto.ProjectDto;
 import com.hedi.timetracking.backend.dto.ProjectMemberDto;
 import com.hedi.timetracking.backend.dto.ProjectRequest;
@@ -59,6 +60,11 @@ public class ProjectController {
     @GetMapping("/{id}/members")
     public ResponseEntity<List<ProjectMemberDto>> getProjectMembers(@PathVariable Long id) {
         return ResponseEntity.ok(projectService.getProjectMembers(id));
+    }
+
+    @GetMapping("/{id}/budget")
+    public ResponseEntity<ProjectBudgetDto> getProjectBudget(@PathVariable Long id) {
+        return ResponseEntity.ok(projectService.getBudget(id));
     }
 
 }

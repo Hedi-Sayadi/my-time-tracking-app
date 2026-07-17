@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
-import { useProject, useProjectMembers, useShareProject, useUnshareProject } from '../api/projects';
+import { useProject, useProjectMembers, useShareProject, useUnshareProject, useProjectBudget } from '../api/projects';
 import { useProjectTime, useProjectTasks, exportProjectTasks } from '../api/tasks';
 import { formatTime } from '../utils/datetime';
 
@@ -29,6 +29,7 @@ function ProjectDetailPage() {
 
   const { data: project, isLoading: projectLoading } = useProject(projectId);
   const { data: members, isLoading: membersLoading } = useProjectMembers(projectId);
+  const { data: budget } = useProjectBudget(projectId);
   const { data: timeData, isLoading: timeLoading } = useProjectTime(
     projectId,
     new Date(from).toISOString(),
@@ -93,6 +94,46 @@ function ProjectDetailPage() {
               <span> | Shared with {members.length} user{members.length > 1 ? 's' : ''}</span>
             )}
           </p>
+        )}
+        {budget && budget.budgetHours != null && (
+          <div className="panel" style={{ marginTop: 12, padding: '12px 16px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span>Budget</span>
+              <strong>
+                {(budget.spentSeconds / 3600).toFixed(1)}h / {budget.budgetHours}h
+              </strong>
+            </div>
+            <div
+              style={{
+                height: '8px',
+                background: '#e5e7eb',
+                borderRadius: '4px',
+                overflow: 'hidden',
+                marginTop: '8px',
+              }}
+            >
+              <div
+                style={{
+                  width: `${Math.min(100, (budget.spentSeconds / 3600 / budget.budgetHours) * 100)}%`,
+                  height: '100%',
+                  background:
+                    budget.spentSeconds / 3600 > budget.budgetHours
+                      ? '#dc2626'
+                      : (budget.spentSeconds / 3600) / budget.budgetHours >= 0.8
+                        ? '#f59e0b'
+                        : '#2563eb',
+                  borderRadius: '4px',
+                  transition: 'width 0.3s ease',
+                }}
+              />
+            </div>
+            {budget.spentSeconds / 3600 > budget.budgetHours && (
+              <small style={{ color: '#dc2626' }}>Over budget</small>
+            )}
+            {(budget.spentSeconds / 3600) / budget.budgetHours >= 0.8 && budget.spentSeconds / 3600 <= budget.budgetHours && (
+              <small style={{ color: '#f59e0b' }}>Approaching limit</small>
+            )}
+          </div>
         )}
       </header>
 

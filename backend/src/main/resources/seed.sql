@@ -11,17 +11,17 @@ DELETE FROM projects;
 -- Use user id 6 (sayadihedi145@gmail.com) as the seed user
 
 -- Projects (with hierarchy)
-INSERT INTO projects (id, name, description, parent_id, user_id, created_at) VALUES
-(1, 'University — Summer Term 2026', 'All university courses and assignments', NULL, 6, NOW()),
-(2, 'SE2P — Software Engineering II', 'Software engineering lecture with practical project', 1, 6, NOW()),
-(3, 'Final Project', 'Full-stack time tracking web application', 2, 6, NOW()),
-(4, 'Exercise Sheets', 'Weekly SE2P exercises', 2, 6, NOW()),
-(5, 'Personal Development', 'Gym, reading, and side projects', NULL, 6, NOW()),
-(6, 'Gym & Fitness', 'Weekly workout routine', 5, 6, NOW()),
-(7, 'Reading', 'Technical books and articles', 5, 6, NOW()),
-(8, 'Part-time Job', 'Student assistant at university IT department', NULL, 6, NOW()),
-(9, 'Server Maintenance', 'Monthly server updates and monitoring', 8, 6, NOW()),
-(10, 'User Support', 'Helping students with IT issues', 8, 6, NOW());
+INSERT INTO projects (id, name, description, parent_id, user_id, budget_hours, created_at) VALUES
+(1, 'University — Summer Term 2026', 'All university courses and assignments', NULL, 6, NULL, NOW()),
+(2, 'SE2P — Software Engineering II', 'Software engineering lecture with practical project', 1, 6, 60, NOW()),
+(3, 'Final Project', 'Full-stack time tracking web application', 2, 6, 80, NOW()),
+(4, 'Exercise Sheets', 'Weekly SE2P exercises', 2, 6, 20, NOW()),
+(5, 'Personal Development', 'Gym, reading, and side projects', NULL, 6, NULL, NOW()),
+(6, 'Gym & Fitness', 'Weekly workout routine', 5, 6, 8, NOW()),
+(7, 'Reading', 'Technical books and articles', 5, 6, 10, NOW()),
+(8, 'Part-time Job', 'Student assistant at university IT department', NULL, 6, 40, NOW()),
+(9, 'Server Maintenance', 'Monthly server updates and monitoring', 8, 6, 12, NOW()),
+(10, 'User Support', 'Helping students with IT issues', 8, 6, 15, NOW());
 
 -- Reset sequences so future inserts get correct IDs
 SELECT setval('projects_id_seq', (SELECT MAX(id) FROM projects));

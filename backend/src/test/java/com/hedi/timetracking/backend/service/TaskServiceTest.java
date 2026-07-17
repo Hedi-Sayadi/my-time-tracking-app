@@ -75,7 +75,7 @@ class TaskServiceTest {
     void getTask_withWrongId_shouldThrowNotFound() {
         User user = User.builder().id(1L).username("testuser").build();
         when(userRepository.findByUsername("testuser")).thenReturn(Optional.of(user));
-        when(taskRepository.findByIdAndUserId(99L, 1L)).thenReturn(Optional.empty());
+        when(taskRepository.findAccessibleByIdAndUserId(99L, 1L)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> taskService.getTask(99L))
                 .isInstanceOf(ResourceNotFoundException.class);

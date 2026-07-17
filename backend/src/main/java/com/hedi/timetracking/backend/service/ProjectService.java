@@ -5,9 +5,11 @@ import com.hedi.timetracking.backend.exception.ResourceNotFoundException;
 import com.hedi.timetracking.backend.exception.UnauthorizedException;
 import com.hedi.timetracking.backend.model.Project;
 import com.hedi.timetracking.backend.model.ProjectMember;
+import com.hedi.timetracking.backend.model.Task;
 import com.hedi.timetracking.backend.model.User;
 import com.hedi.timetracking.backend.repository.ProjectMemberRepository;
 import com.hedi.timetracking.backend.repository.ProjectRepository;
+import com.hedi.timetracking.backend.repository.TaskRepository;
 import com.hedi.timetracking.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -24,6 +26,7 @@ public class ProjectService {
     private final ProjectRepository projectRepository;
     private final ProjectMemberRepository projectMemberRepository;
     private final UserRepository userRepository;
+    private final TaskRepository taskRepository;
 
     @Transactional(readOnly = true)
     public List<ProjectDto> getAllProjects() {
@@ -49,6 +52,7 @@ public class ProjectService {
         Project project = Project.builder()
                 .name(request.getName())
                 .description(request.getDescription())
+                .budgetHours(request.getBudgetHours())
                 .user(user)
                 .build();
 
@@ -70,6 +74,7 @@ public class ProjectService {
 
         project.setName(request.getName());
         project.setDescription(request.getDescription());
+        project.setBudgetHours(request.getBudgetHours());
 
         if (request.getParentId() != null) {
             if (request.getParentId().equals(id)) {
@@ -150,6 +155,25 @@ public class ProjectService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
+    public ProjectBudgetDto getBudget(Long projectId) {
+        Long userId = getCurrentUserId();
+        Project project = projectRepository.findAccessibleById(userId, projectId)
+                .orElseThrow(() -> new ResourceNotFoundException("Project not found"));
+
+        List<Task> tasks = taskRepository.findAllByProjectId(projectId);
+        long spentSeconds = tasks.stream()
+                .mapToLong(com.hedi.timetracking.backend.model.Task::getDurationSeconds)
+                .sum();
+
+        ProjectBudgetDto dto = new ProjectBudgetDto();
+        dto.setProjectId(project.getId());
+        dto.setProjectName(project.getName());
+        dto.setBudgetHours(project.getBudgetHours());
+        dto.setSpentSeconds(spentSeconds);
+        return dto;
+    }
+
     private ProjectDto mapToDto(Project project) {
         ProjectDto dto = new ProjectDto();
         dto.setId(project.getId());
@@ -160,6 +184,7 @@ public class ProjectService {
         dto.setOwnerId(project.getUser().getId());
         dto.setOwnerUsername(project.getUser().getUsername());
         dto.setMembers(project.getMembers().stream().map(this::mapMemberToDto).toList());
+        dto.setBudgetHours(project.getBudgetHours());
         dto.setCreatedAt(project.getCreatedAt());
         return dto;
     }
