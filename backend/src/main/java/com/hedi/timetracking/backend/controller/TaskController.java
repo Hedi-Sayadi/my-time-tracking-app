@@ -5,11 +5,14 @@ import com.hedi.timetracking.backend.service.TaskService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/tasks")
@@ -86,6 +89,45 @@ public class TaskController {
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant to,
             @RequestParam(required = false) Long userId) {
         return ResponseEntity.ok(taskService.getProjectTasks(projectId, from, to, userId));
+    }
+
+    @GetMapping("/projects/{projectId}/export")
+    public ResponseEntity<String> exportProjectTasks(
+            @PathVariable Long projectId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant from,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant to) {
+        List<TaskDto> tasks = taskService.exportProjectTasks(projectId, from, to);
+
+        StringBuilder csv = new StringBuilder();
+        csv.append("ID,Description,Start Time,End Time,Duration (seconds),Projects,User,Running\n");
+
+        for (TaskDto task : tasks) {
+            String projects = task.getProjects().stream()
+                    .map(ProjectDto::getName)
+                    .collect(Collectors.joining("; "));
+            csv.append(String.format("%d,\"%s\",\"%s\",\"%s\",%d,\"%s\",\"%s\",%b\n",
+                    task.getId(),
+                    escapeCsv(task.getDescription()),
+                    task.getStartTime(),
+                    task.getEndTime() != null ? task.getEndTime() : "",
+                    task.getDurationSeconds(),
+                    escapeCsv(projects),
+                    escapeCsv(task.getUsername()),
+                    task.getRunning()));
+        }
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.parseMediaType("text/csv"));
+        headers.setContentDispositionFormData("attachment", "project-tasks.csv");
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(csv.toString());
+    }
+
+    private String escapeCsv(String value) {
+        if (value == null) return "";
+        return value.replace("\"", "\"\"");
     }
 
 }
