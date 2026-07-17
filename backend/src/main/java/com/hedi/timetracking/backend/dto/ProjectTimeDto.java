@@ -1,8 +1,10 @@
 package com.hedi.timetracking.backend.dto;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
 public class ProjectTimeDto {
 
     private Long projectId;

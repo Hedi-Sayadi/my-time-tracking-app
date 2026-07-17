@@ -1,11 +1,13 @@
 package com.hedi.timetracking.backend.dto;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.Instant;
 import java.util.Set;
 
 @Data
+@NoArgsConstructor
 public class TaskDto {
 
     private Long id;
