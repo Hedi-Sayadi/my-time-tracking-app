@@ -5,7 +5,7 @@ COPY .mvn/ .mvn/
 COPY mvnw pom.xml ./
 RUN ./mvnw dependency:go-offline -B
 COPY src ./src
-RUN ./mvnw package -DskipTests -B && \
+RUN ./mvnw package -Dmaven.test.skip=true -B && \
     mkdir -p target/dependency && \
     (cd target/dependency; jar -xf ../*.jar)
 
