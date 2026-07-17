@@ -1,4 +1,8 @@
+import { useAuth } from '../hooks/useAuth'
+
 function SettingsPage() {
+  const { user, logout } = useAuth()
+
   const settings = [
     { label: 'Workspace', value: 'Personal', note: 'Study and project tracking' },
   ]
@@ -22,6 +26,23 @@ function SettingsPage() {
               <span>{setting.value}</span>
             </article>
           ))}
+        </div>
+      </article>
+
+      <article className="panel">
+        <h2>Account</h2>
+        <div className="task-list">
+          <article className="task-row">
+            <div>
+              <strong>Signed in as</strong>
+              <p>{user?.username ?? 'Unknown user'}</p>
+            </div>
+          </article>
+          <div className="form-actions" style={{ marginTop: 12 }}>
+            <button type="button" className="danger-button" onClick={logout}>
+              Log out
+            </button>
+          </div>
         </div>
       </article>
     </section>
