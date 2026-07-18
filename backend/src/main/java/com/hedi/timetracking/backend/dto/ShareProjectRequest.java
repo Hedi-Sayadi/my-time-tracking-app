@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ShareProjectRequest {
 
-    @NotBlank(message = "Username is required")
-    private String username;
-
+  @NotBlank(message = "Username is required")
+  private String username;
 }

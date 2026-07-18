@@ -11,7 +11,6 @@ import org.springframework.context.annotation.Configuration;
 @Setter
 public class JwtProperties {
 
-    private String secret;
-    private long expirationMs;
-
+  private String secret;
+  private long expirationMs;
 }

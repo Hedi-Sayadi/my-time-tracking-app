@@ -7,9 +7,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ProjectBudgetDto {
 
-    private Long projectId;
-    private String projectName;
-    private Integer budgetHours;
-    private Long spentSeconds;
-
+  private Long projectId;
+  private String projectName;
+  private Integer budgetHours;
+  private Long spentSeconds;
 }

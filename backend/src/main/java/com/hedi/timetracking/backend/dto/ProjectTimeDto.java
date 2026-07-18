@@ -7,9 +7,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ProjectTimeDto {
 
-    private Long projectId;
-    private String projectName;
-    private long totalDurationSeconds;
-    private long taskCount;
-
+  private Long projectId;
+  private String projectName;
+  private long totalDurationSeconds;
+  private long taskCount;
 }
