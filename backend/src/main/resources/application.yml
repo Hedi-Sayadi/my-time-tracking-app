@@ -24,12 +24,13 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
+    defer-datasource-initialization: true
     properties:
       hibernate:
         format_sql: true
   sql:
     init:
-      mode: never
+      mode: always
 
 jwt:
   secret: ${JWT_SECRET:change-me-in-production-change-me-in-production-change-me}
