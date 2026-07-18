@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter } from 'react-router-dom';
 import LoginPage from '../pages/LoginPage';
 import { AuthProvider } from '../hooks/useAuth';
+import { useLogin } from '../api/auth';
 import { ReactNode } from 'react';
 
 const queryClient = new QueryClient({
@@ -57,5 +58,42 @@ describe('LoginPage', () => {
     
     // HTML5 validation prevents submit, so no error message shown
     expect(screen.queryByText(/invalid/i)).not.toBeInTheDocument();
+  });
+
+  it('should submit form with username and password', async () => {
+    render(<LoginPage />, { wrapper });
+
+    await userEvent.type(screen.getByLabelText(/username/i), 'testuser');
+    await userEvent.type(screen.getByLabelText(/password/i), 'password123');
+
+    const form = screen.getByRole('button', { name: /log in/i }).closest('form');
+    if (form) {
+      fireEvent.submit(form);
+    }
+
+    await waitFor(() => {
+      expect(screen.queryByText('Invalid username or password')).not.toBeInTheDocument();
+    });
+  });
+
+  it('should show error when login fails', async () => {
+    vi.mocked(useLogin).mockReturnValue({
+      mutateAsync: vi.fn().mockRejectedValue(new Error('fail')),
+      isPending: false,
+    } as any);
+
+    render(<LoginPage />, { wrapper });
+
+    await userEvent.type(screen.getByLabelText(/username/i), 'bad');
+    await userEvent.type(screen.getByLabelText(/password/i), 'bad');
+
+    const form = screen.getByRole('button', { name: /log in/i }).closest('form');
+    if (form) {
+      fireEvent.submit(form);
+    }
+
+    await waitFor(() => {
+      expect(screen.getByText('Invalid username or password')).toBeInTheDocument();
+    });
   });
 });
