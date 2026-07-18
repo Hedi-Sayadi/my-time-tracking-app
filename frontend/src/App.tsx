@@ -1,15 +1,15 @@
-import './App.css'
-import { BrowserRouter, Navigate, Route, Routes, Outlet } from 'react-router-dom'
-import { AuthProvider, useAuth } from './hooks/useAuth'
-import AppLayout from './components/AppLayout'
-import DashboardPage from './pages/DashboardPage'
-import ProjectsPage from './pages/ProjectsPage'
-import ProjectDetailPage from './pages/ProjectDetailPage'
-import ReportsPage from './pages/ReportsPage'
-import SettingsPage from './pages/SettingsPage'
-import TasksPage from './pages/TasksPage'
-import LoginPage from './pages/LoginPage'
-import RegisterPage from './pages/RegisterPage'
+import './App.css';
+import { BrowserRouter, Navigate, Route, Routes, Outlet } from 'react-router-dom';
+import { AuthProvider, useAuth } from './hooks/useAuth';
+import AppLayout from './components/AppLayout';
+import DashboardPage from './pages/DashboardPage';
+import ProjectsPage from './pages/ProjectsPage';
+import ProjectDetailPage from './pages/ProjectDetailPage';
+import ReportsPage from './pages/ReportsPage';
+import SettingsPage from './pages/SettingsPage';
+import TasksPage from './pages/TasksPage';
+import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
 
 function ProtectedRoute() {
   const { isAuthenticated } = useAuth();
@@ -52,7 +52,7 @@ function App() {
         <AppRoutes />
       </AuthProvider>
     </BrowserRouter>
-  )
+  );
 }
 
-export default App
+export default App;

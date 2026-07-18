@@ -1,8 +1,8 @@
 type MetricCardProps = {
-  label: string
-  value: string
-  note: string
-}
+  label: string;
+  value: string;
+  note: string;
+};
 
 function MetricCard({ label, value, note }: MetricCardProps) {
   return (
@@ -11,7 +11,7 @@ function MetricCard({ label, value, note }: MetricCardProps) {
       <strong>{value}</strong>
       <p>{note}</p>
     </article>
-  )
+  );
 }
 
-export default MetricCard
+export default MetricCard;

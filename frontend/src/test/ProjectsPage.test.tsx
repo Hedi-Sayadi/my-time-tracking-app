@@ -150,7 +150,10 @@ describe('ProjectsPage', () => {
 
   it('submits the create form with valid data', async () => {
     const mutateAsync = vi.fn().mockResolvedValue({});
-    vi.spyOn(projectsApi, 'useCreateProject').mockReturnValue({ ...mutationMock(), mutateAsync } as any);
+    vi.spyOn(projectsApi, 'useCreateProject').mockReturnValue({
+      ...mutationMock(),
+      mutateAsync,
+    } as any);
 
     render(<ProjectsPage />, { wrapper });
 
@@ -175,7 +178,10 @@ describe('ProjectsPage', () => {
   });
 
   it('should delete project when delete clicked', () => {
-    vi.stubGlobal('confirm', vi.fn(() => true));
+    vi.stubGlobal(
+      'confirm',
+      vi.fn(() => true)
+    );
     const mutate = vi.fn();
     vi.spyOn(projectsApi, 'useDeleteProject').mockReturnValue({ ...mutationMock(), mutate } as any);
 
@@ -195,9 +201,21 @@ describe('ProjectsPage', () => {
   });
 
   it('should render warning budget bar', () => {
-    const warningProjects = [{
-      id: 1, name: 'Warning Proj', description: '', parentId: null, subprojects: [], ownerId: 1, ownerUsername: 'tester', members: [], budgetHours: 10, spentSeconds: 28800, createdAt: '',
-    }];
+    const warningProjects = [
+      {
+        id: 1,
+        name: 'Warning Proj',
+        description: '',
+        parentId: null,
+        subprojects: [],
+        ownerId: 1,
+        ownerUsername: 'tester',
+        members: [],
+        budgetHours: 10,
+        spentSeconds: 28800,
+        createdAt: '',
+      },
+    ];
     vi.spyOn(projectsApi, 'useProjects').mockReturnValue(useQueryMock(warningProjects) as any);
     render(<ProjectsPage />, { wrapper });
 
@@ -206,9 +224,21 @@ describe('ProjectsPage', () => {
   });
 
   it('should render over budget bar', () => {
-    const overProjects = [{
-      id: 1, name: 'Over Proj', description: '', parentId: null, subprojects: [], ownerId: 1, ownerUsername: 'tester', members: [], budgetHours: 10, spentSeconds: 40000, createdAt: '',
-    }];
+    const overProjects = [
+      {
+        id: 1,
+        name: 'Over Proj',
+        description: '',
+        parentId: null,
+        subprojects: [],
+        ownerId: 1,
+        ownerUsername: 'tester',
+        members: [],
+        budgetHours: 10,
+        spentSeconds: 40000,
+        createdAt: '',
+      },
+    ];
     vi.spyOn(projectsApi, 'useProjects').mockReturnValue(useQueryMock(overProjects) as any);
     render(<ProjectsPage />, { wrapper });
 
@@ -218,7 +248,10 @@ describe('ProjectsPage', () => {
 
   it('should submit edit form', async () => {
     const mutateAsync = vi.fn().mockResolvedValue({});
-    vi.spyOn(projectsApi, 'useUpdateProject').mockReturnValue({ ...mutationMock(), mutateAsync } as any);
+    vi.spyOn(projectsApi, 'useUpdateProject').mockReturnValue({
+      ...mutationMock(),
+      mutateAsync,
+    } as any);
 
     render(<ProjectsPage />, { wrapper });
 

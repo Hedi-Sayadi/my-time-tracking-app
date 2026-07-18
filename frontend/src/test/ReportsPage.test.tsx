@@ -122,14 +122,22 @@ describe('ReportsPage', () => {
   });
 
   it('shows loading state', () => {
-    vi.spyOn(tasksApi, 'useTaskOverview').mockReturnValue({ ...useQueryMock(null), isLoading: true, isPending: true, isSuccess: false, status: 'pending' } as any);
+    vi.spyOn(tasksApi, 'useTaskOverview').mockReturnValue({
+      ...useQueryMock(null),
+      isLoading: true,
+      isPending: true,
+      isSuccess: false,
+      status: 'pending',
+    } as any);
     render(<ReportsPage />, { wrapper });
 
     expect(screen.getByText('Loading...')).toBeInTheDocument();
   });
 
   it('shows empty state when no tasks', () => {
-    vi.spyOn(tasksApi, 'useTaskOverview').mockReturnValue(useQueryMock({ ...overview, tasks: [], totalDurationSeconds: 0 }) as any);
+    vi.spyOn(tasksApi, 'useTaskOverview').mockReturnValue(
+      useQueryMock({ ...overview, tasks: [], totalDurationSeconds: 0 }) as any
+    );
     render(<ReportsPage />, { wrapper });
 
     expect(screen.getByText(/no tasks for this period/i)).toBeInTheDocument();

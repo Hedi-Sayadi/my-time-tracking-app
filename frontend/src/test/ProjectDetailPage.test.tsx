@@ -238,8 +238,15 @@ describe('ProjectDetailPage', () => {
   it('should share project when form submitted', async () => {
     const shareMutateAsync = vi.fn().mockResolvedValue({});
     vi.spyOn(projectsApi, 'useShareProject').mockReturnValue({
-      mutateAsync: shareMutateAsync, mutate: shareMutateAsync, isPending: false,
-      isIdle: true, isSuccess: false, isError: false, error: null, status: 'idle', reset: vi.fn(),
+      mutateAsync: shareMutateAsync,
+      mutate: shareMutateAsync,
+      isPending: false,
+      isIdle: true,
+      isSuccess: false,
+      isError: false,
+      error: null,
+      status: 'idle',
+      reset: vi.fn(),
     } as any);
 
     render(<ProjectDetailPage />, { wrapper });
@@ -254,11 +261,21 @@ describe('ProjectDetailPage', () => {
   });
 
   it('should remove member when remove clicked', async () => {
-    vi.stubGlobal('confirm', vi.fn(() => true));
+    vi.stubGlobal(
+      'confirm',
+      vi.fn(() => true)
+    );
     const unshareMutateAsync = vi.fn().mockResolvedValue({});
     vi.spyOn(projectsApi, 'useUnshareProject').mockReturnValue({
-      mutateAsync: unshareMutateAsync, mutate: unshareMutateAsync, isPending: false,
-      isIdle: true, isSuccess: false, isError: false, error: null, status: 'idle', reset: vi.fn(),
+      mutateAsync: unshareMutateAsync,
+      mutate: unshareMutateAsync,
+      isPending: false,
+      isIdle: true,
+      isSuccess: false,
+      isError: false,
+      error: null,
+      status: 'idle',
+      reset: vi.fn(),
     } as any);
 
     render(<ProjectDetailPage />, { wrapper });
@@ -274,13 +291,22 @@ describe('ProjectDetailPage', () => {
     render(<ProjectDetailPage />, { wrapper });
 
     const select = screen.getByLabelText(/filter by user/i);
-    await import('@testing-library/react').then(({ fireEvent }) => fireEvent.change(select, { target: { value: '1' } }));
+    await import('@testing-library/react').then(({ fireEvent }) =>
+      fireEvent.change(select, { target: { value: '1' } })
+    );
 
     expect(select).toHaveValue('1');
   });
 
   it('should show members list for non-owner', () => {
-    const nonOwnerUser = { id: 2, username: 'other', email: 'o@o.com', timezone: null, weeklyTargetHours: null, createdAt: '2024-01-01T00:00:00Z' };
+    const nonOwnerUser = {
+      id: 2,
+      username: 'other',
+      email: 'o@o.com',
+      timezone: null,
+      weeklyTargetHours: null,
+      createdAt: '2024-01-01T00:00:00Z',
+    };
     vi.spyOn(authApi, 'useCurrentUser').mockReturnValue(useQueryMock(nonOwnerUser) as any);
 
     render(<ProjectDetailPage />, { wrapper });
@@ -291,7 +317,12 @@ describe('ProjectDetailPage', () => {
   });
 
   it('should show over budget message', () => {
-    const overBudget = { projectId: 1, projectName: 'Project Detail', budgetHours: 20, spentSeconds: 80000 };
+    const overBudget = {
+      projectId: 1,
+      projectName: 'Project Detail',
+      budgetHours: 20,
+      spentSeconds: 80000,
+    };
     vi.spyOn(projectsApi, 'useProjectBudget').mockReturnValue(useQueryMock(overBudget) as any);
 
     render(<ProjectDetailPage />, { wrapper });

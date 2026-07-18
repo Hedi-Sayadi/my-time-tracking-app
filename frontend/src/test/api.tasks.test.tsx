@@ -9,14 +9,23 @@ vi.mock('../api/client', () => ({
     get: vi.fn(),
     put: vi.fn(),
     delete: vi.fn(),
-  }
+  },
 }));
 
 import apiClient from '../api/client';
 import {
-  useTasks, useActiveTask, useStartTask, useStopTask, useResumeTask,
-  useCreateTask, useUpdateTask, useDeleteTask, useTaskOverview,
-  useProjectTime, useProjectTasks, exportProjectTasks
+  useTasks,
+  useActiveTask,
+  useStartTask,
+  useStopTask,
+  useResumeTask,
+  useCreateTask,
+  useUpdateTask,
+  useDeleteTask,
+  useTaskOverview,
+  useProjectTime,
+  useProjectTasks,
+  exportProjectTasks,
 } from '../api/tasks';
 
 const queryClient = new QueryClient({
@@ -34,7 +43,21 @@ describe('Tasks API hooks', () => {
   });
 
   it('useTasks should get /tasks', async () => {
-    const mockData = [{ id: 1, description: 'Test', startTime: '', endTime: null, running: false, durationSeconds: 3600, projects: [], userId: 1, username: 'test', createdAt: '', updatedAt: '' }];
+    const mockData = [
+      {
+        id: 1,
+        description: 'Test',
+        startTime: '',
+        endTime: null,
+        running: false,
+        durationSeconds: 3600,
+        projects: [],
+        userId: 1,
+        username: 'test',
+        createdAt: '',
+        updatedAt: '',
+      },
+    ];
     vi.mocked(apiClient.get).mockResolvedValueOnce({ data: mockData });
 
     const { result } = renderHook(() => useTasks(), { wrapper });
@@ -53,7 +76,19 @@ describe('Tasks API hooks', () => {
   });
 
   it('useActiveTask should get /tasks/active with data', async () => {
-    const mockData = { id: 1, description: 'Test', startTime: '', endTime: null, running: true, durationSeconds: 0, projects: [], userId: 1, username: 'test', createdAt: '', updatedAt: '' };
+    const mockData = {
+      id: 1,
+      description: 'Test',
+      startTime: '',
+      endTime: null,
+      running: true,
+      durationSeconds: 0,
+      projects: [],
+      userId: 1,
+      username: 'test',
+      createdAt: '',
+      updatedAt: '',
+    };
     vi.mocked(apiClient.get).mockResolvedValueOnce({ status: 200, data: mockData });
 
     const { result } = renderHook(() => useActiveTask(), { wrapper });
@@ -62,7 +97,19 @@ describe('Tasks API hooks', () => {
   });
 
   it('useStartTask should post to /tasks/start', async () => {
-    const mockData = { id: 1, description: 'Test', startTime: '', endTime: null, running: true, durationSeconds: 0, projects: [], userId: 1, username: 'test', createdAt: '', updatedAt: '' };
+    const mockData = {
+      id: 1,
+      description: 'Test',
+      startTime: '',
+      endTime: null,
+      running: true,
+      durationSeconds: 0,
+      projects: [],
+      userId: 1,
+      username: 'test',
+      createdAt: '',
+      updatedAt: '',
+    };
     vi.mocked(apiClient.post).mockResolvedValueOnce({ data: mockData });
 
     const { result } = renderHook(() => useStartTask(), { wrapper });
@@ -72,7 +119,19 @@ describe('Tasks API hooks', () => {
   });
 
   it('useStopTask should post to /tasks/:id/stop', async () => {
-    const mockData = { id: 1, description: 'Test', startTime: '', endTime: '', running: false, durationSeconds: 3600, projects: [], userId: 1, username: 'test', createdAt: '', updatedAt: '' };
+    const mockData = {
+      id: 1,
+      description: 'Test',
+      startTime: '',
+      endTime: '',
+      running: false,
+      durationSeconds: 3600,
+      projects: [],
+      userId: 1,
+      username: 'test',
+      createdAt: '',
+      updatedAt: '',
+    };
     vi.mocked(apiClient.post).mockResolvedValueOnce({ data: mockData });
 
     const { result } = renderHook(() => useStopTask(), { wrapper });
@@ -82,7 +141,19 @@ describe('Tasks API hooks', () => {
   });
 
   it('useResumeTask should post to /tasks/:id/resume', async () => {
-    const mockData = { id: 1, description: 'Test', startTime: '', endTime: null, running: true, durationSeconds: 0, projects: [], userId: 1, username: 'test', createdAt: '', updatedAt: '' };
+    const mockData = {
+      id: 1,
+      description: 'Test',
+      startTime: '',
+      endTime: null,
+      running: true,
+      durationSeconds: 0,
+      projects: [],
+      userId: 1,
+      username: 'test',
+      createdAt: '',
+      updatedAt: '',
+    };
     vi.mocked(apiClient.post).mockResolvedValueOnce({ data: mockData });
 
     const { result } = renderHook(() => useResumeTask(), { wrapper });
@@ -92,23 +163,64 @@ describe('Tasks API hooks', () => {
   });
 
   it('useCreateTask should post to /tasks', async () => {
-    const mockData = { id: 1, description: 'Test', startTime: '', endTime: '', running: false, durationSeconds: 3600, projects: [], userId: 1, username: 'test', createdAt: '', updatedAt: '' };
+    const mockData = {
+      id: 1,
+      description: 'Test',
+      startTime: '',
+      endTime: '',
+      running: false,
+      durationSeconds: 3600,
+      projects: [],
+      userId: 1,
+      username: 'test',
+      createdAt: '',
+      updatedAt: '',
+    };
     vi.mocked(apiClient.post).mockResolvedValueOnce({ data: mockData });
 
     const { result } = renderHook(() => useCreateTask(), { wrapper });
-    const data = await result.current.mutateAsync({ description: 'Test', startTime: '', endTime: '', projectIds: [1] });
+    const data = await result.current.mutateAsync({
+      description: 'Test',
+      startTime: '',
+      endTime: '',
+      projectIds: [1],
+    });
     expect(data).toEqual(mockData);
-    expect(apiClient.post).toHaveBeenCalledWith('/tasks', { description: 'Test', startTime: '', endTime: '', projectIds: [1] });
+    expect(apiClient.post).toHaveBeenCalledWith('/tasks', {
+      description: 'Test',
+      startTime: '',
+      endTime: '',
+      projectIds: [1],
+    });
   });
 
   it('useUpdateTask should put to /tasks/:id', async () => {
-    const mockData = { id: 1, description: 'Updated', startTime: '', endTime: '', running: false, durationSeconds: 3600, projects: [], userId: 1, username: 'test', createdAt: '', updatedAt: '' };
+    const mockData = {
+      id: 1,
+      description: 'Updated',
+      startTime: '',
+      endTime: '',
+      running: false,
+      durationSeconds: 3600,
+      projects: [],
+      userId: 1,
+      username: 'test',
+      createdAt: '',
+      updatedAt: '',
+    };
     vi.mocked(apiClient.put).mockResolvedValueOnce({ data: mockData });
 
     const { result } = renderHook(() => useUpdateTask(), { wrapper });
-    const data = await result.current.mutateAsync({ id: 1, data: { description: 'Updated', startTime: '', endTime: '' } });
+    const data = await result.current.mutateAsync({
+      id: 1,
+      data: { description: 'Updated', startTime: '', endTime: '' },
+    });
     expect(data).toEqual(mockData);
-    expect(apiClient.put).toHaveBeenCalledWith('/tasks/1', { description: 'Updated', startTime: '', endTime: '' });
+    expect(apiClient.put).toHaveBeenCalledWith('/tasks/1', {
+      description: 'Updated',
+      startTime: '',
+      endTime: '',
+    });
   });
 
   it('useDeleteTask should delete /tasks/:id', async () => {
@@ -129,7 +241,12 @@ describe('Tasks API hooks', () => {
   });
 
   it('useProjectTime should get /tasks/projects/:id/time', async () => {
-    const mockData = { projectId: 1, projectName: 'Test', totalDurationSeconds: 3600, taskCount: 2 };
+    const mockData = {
+      projectId: 1,
+      projectName: 'Test',
+      totalDurationSeconds: 3600,
+      taskCount: 2,
+    };
     vi.mocked(apiClient.get).mockResolvedValueOnce({ data: mockData });
 
     const { result } = renderHook(() => useProjectTime(1, '2024-01-01', '2024-01-31'), { wrapper });
@@ -138,10 +255,26 @@ describe('Tasks API hooks', () => {
   });
 
   it('useProjectTasks should get /tasks/projects/:id/tasks', async () => {
-    const mockData = [{ id: 1, description: 'Test', startTime: '', endTime: '', running: false, durationSeconds: 3600, projects: [], userId: 1, username: 'test', createdAt: '', updatedAt: '' }];
+    const mockData = [
+      {
+        id: 1,
+        description: 'Test',
+        startTime: '',
+        endTime: '',
+        running: false,
+        durationSeconds: 3600,
+        projects: [],
+        userId: 1,
+        username: 'test',
+        createdAt: '',
+        updatedAt: '',
+      },
+    ];
     vi.mocked(apiClient.get).mockResolvedValueOnce({ data: mockData });
 
-    const { result } = renderHook(() => useProjectTasks(1, '2024-01-01', '2024-01-31'), { wrapper });
+    const { result } = renderHook(() => useProjectTasks(1, '2024-01-01', '2024-01-31'), {
+      wrapper,
+    });
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
     expect(apiClient.get).toHaveBeenCalledWith(expect.stringContaining('/tasks/projects/1/tasks?'));
   });
@@ -151,6 +284,9 @@ describe('Tasks API hooks', () => {
     vi.mocked(apiClient.get).mockResolvedValueOnce({ data: mockBlob });
 
     const blob = await exportProjectTasks(1, '2024-01-01', '2024-01-31');
-    expect(apiClient.get).toHaveBeenCalledWith(expect.stringContaining('/tasks/projects/1/export?'), { responseType: 'blob' });
+    expect(apiClient.get).toHaveBeenCalledWith(
+      expect.stringContaining('/tasks/projects/1/export?'),
+      { responseType: 'blob' }
+    );
   });
 });

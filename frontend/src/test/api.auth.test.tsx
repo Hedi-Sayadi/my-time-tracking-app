@@ -9,11 +9,19 @@ vi.mock('../api/client', () => ({
     get: vi.fn(),
     put: vi.fn(),
     delete: vi.fn(),
-  }
+  },
 }));
 
 import apiClient from '../api/client';
-import { useLogin, useRegister, useCurrentUser, useChangePassword, useUpdateTimezone, useWeeklyGoal, useUpdateWeeklyGoal } from '../api/auth';
+import {
+  useLogin,
+  useRegister,
+  useCurrentUser,
+  useChangePassword,
+  useUpdateTimezone,
+  useWeeklyGoal,
+  useUpdateWeeklyGoal,
+} from '../api/auth';
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
@@ -31,29 +39,69 @@ describe('Auth API hooks', () => {
   });
 
   it('useLogin should post to /auth/login', async () => {
-    const mockResponse = { token: 'abc', type: 'Bearer', user: { id: 1, username: 'test', email: 't@t.com', timezone: null, weeklyTargetHours: null, createdAt: '2024-01-01' } };
+    const mockResponse = {
+      token: 'abc',
+      type: 'Bearer',
+      user: {
+        id: 1,
+        username: 'test',
+        email: 't@t.com',
+        timezone: null,
+        weeklyTargetHours: null,
+        createdAt: '2024-01-01',
+      },
+    };
     vi.mocked(apiClient.post).mockResolvedValueOnce({ data: mockResponse });
 
     const { result } = renderHook(() => useLogin(), { wrapper });
     const data = await result.current.mutateAsync({ username: 'test', password: 'pass' });
 
     expect(data).toEqual(mockResponse);
-    expect(apiClient.post).toHaveBeenCalledWith('/auth/login', { username: 'test', password: 'pass' });
+    expect(apiClient.post).toHaveBeenCalledWith('/auth/login', {
+      username: 'test',
+      password: 'pass',
+    });
   });
 
   it('useRegister should post to /auth/register', async () => {
-    const mockResponse = { token: 'abc', type: 'Bearer', user: { id: 1, username: 'test', email: 't@t.com', timezone: null, weeklyTargetHours: null, createdAt: '2024-01-01' } };
+    const mockResponse = {
+      token: 'abc',
+      type: 'Bearer',
+      user: {
+        id: 1,
+        username: 'test',
+        email: 't@t.com',
+        timezone: null,
+        weeklyTargetHours: null,
+        createdAt: '2024-01-01',
+      },
+    };
     vi.mocked(apiClient.post).mockResolvedValueOnce({ data: mockResponse });
 
     const { result } = renderHook(() => useRegister(), { wrapper });
-    const data = await result.current.mutateAsync({ username: 'test', email: 't@t.com', password: 'pass' });
+    const data = await result.current.mutateAsync({
+      username: 'test',
+      email: 't@t.com',
+      password: 'pass',
+    });
 
     expect(data).toEqual(mockResponse);
-    expect(apiClient.post).toHaveBeenCalledWith('/auth/register', { username: 'test', email: 't@t.com', password: 'pass' });
+    expect(apiClient.post).toHaveBeenCalledWith('/auth/register', {
+      username: 'test',
+      email: 't@t.com',
+      password: 'pass',
+    });
   });
 
   it('useCurrentUser should get /auth/me when token exists', async () => {
-    const mockUser = { id: 1, username: 'test', email: 't@t.com', timezone: null, weeklyTargetHours: null, createdAt: '2024-01-01' };
+    const mockUser = {
+      id: 1,
+      username: 'test',
+      email: 't@t.com',
+      timezone: null,
+      weeklyTargetHours: null,
+      createdAt: '2024-01-01',
+    };
     vi.mocked(apiClient.get).mockResolvedValueOnce({ data: mockUser });
     localStorage.setItem('token', 'test-token');
 
@@ -76,11 +124,21 @@ describe('Auth API hooks', () => {
     const { result } = renderHook(() => useChangePassword(), { wrapper });
     await result.current.mutateAsync({ oldPassword: 'old', newPassword: 'new' });
 
-    expect(apiClient.put).toHaveBeenCalledWith('/auth/password', { oldPassword: 'old', newPassword: 'new' });
+    expect(apiClient.put).toHaveBeenCalledWith('/auth/password', {
+      oldPassword: 'old',
+      newPassword: 'new',
+    });
   });
 
   it('useUpdateTimezone should put to /auth/timezone', async () => {
-    const mockUser = { id: 1, username: 'test', email: 't@t.com', timezone: 'Europe/Berlin', weeklyTargetHours: null, createdAt: '2024-01-01' };
+    const mockUser = {
+      id: 1,
+      username: 'test',
+      email: 't@t.com',
+      timezone: 'Europe/Berlin',
+      weeklyTargetHours: null,
+      createdAt: '2024-01-01',
+    };
     vi.mocked(apiClient.put).mockResolvedValueOnce({ data: mockUser });
 
     const { result } = renderHook(() => useUpdateTimezone(), { wrapper });
@@ -91,7 +149,13 @@ describe('Auth API hooks', () => {
   });
 
   it('useWeeklyGoal should get /auth/me/goal when token exists', async () => {
-    const mockGoal = { targetHours: 40, spentSeconds: 3600, progressPercent: 2.5, weekStart: '2024-01-01', weekEnd: '2024-01-07' };
+    const mockGoal = {
+      targetHours: 40,
+      spentSeconds: 3600,
+      progressPercent: 2.5,
+      weekStart: '2024-01-01',
+      weekEnd: '2024-01-07',
+    };
     vi.mocked(apiClient.get).mockResolvedValueOnce({ data: mockGoal });
     localStorage.setItem('token', 'test-token');
 
@@ -103,7 +167,14 @@ describe('Auth API hooks', () => {
   });
 
   it('useUpdateWeeklyGoal should put to /auth/me/goal', async () => {
-    const mockUser = { id: 1, username: 'test', email: 't@t.com', timezone: null, weeklyTargetHours: 40, createdAt: '2024-01-01' };
+    const mockUser = {
+      id: 1,
+      username: 'test',
+      email: 't@t.com',
+      timezone: null,
+      weeklyTargetHours: 40,
+      createdAt: '2024-01-01',
+    };
     vi.mocked(apiClient.put).mockResolvedValueOnce({ data: mockUser });
 
     const { result } = renderHook(() => useUpdateWeeklyGoal(), { wrapper });

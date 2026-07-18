@@ -156,7 +156,12 @@ export interface ProjectTime {
   taskCount: number;
 }
 
-export const useProjectTime = (projectId: number, from: string, to: string, userId?: number | null) => {
+export const useProjectTime = (
+  projectId: number,
+  from: string,
+  to: string,
+  userId?: number | null
+) => {
   return useQuery({
     queryKey: ['projects', projectId, 'time', from, to, userId],
     queryFn: async (): Promise<ProjectTime> => {
@@ -164,14 +169,21 @@ export const useProjectTime = (projectId: number, from: string, to: string, user
       params.append('from', from);
       params.append('to', to);
       if (userId != null) params.append('userId', String(userId));
-      const response = await apiClient.get(`/tasks/projects/${projectId}/time?${params.toString()}`);
+      const response = await apiClient.get(
+        `/tasks/projects/${projectId}/time?${params.toString()}`
+      );
       return response.data;
     },
     enabled: !!projectId && !!from && !!to,
   });
 };
 
-export const useProjectTasks = (projectId: number, from: string, to: string, userId?: number | null) => {
+export const useProjectTasks = (
+  projectId: number,
+  from: string,
+  to: string,
+  userId?: number | null
+) => {
   return useQuery({
     queryKey: ['projects', projectId, 'tasks', from, to, userId],
     queryFn: async (): Promise<Task[]> => {
@@ -179,14 +191,20 @@ export const useProjectTasks = (projectId: number, from: string, to: string, use
       params.append('from', from);
       params.append('to', to);
       if (userId != null) params.append('userId', String(userId));
-      const response = await apiClient.get(`/tasks/projects/${projectId}/tasks?${params.toString()}`);
+      const response = await apiClient.get(
+        `/tasks/projects/${projectId}/tasks?${params.toString()}`
+      );
       return response.data;
     },
     enabled: !!projectId && !!from && !!to,
   });
 };
 
-export const exportProjectTasks = async (projectId: number, from: string, to: string): Promise<Blob> => {
+export const exportProjectTasks = async (
+  projectId: number,
+  from: string,
+  to: string
+): Promise<Blob> => {
   const params = new URLSearchParams();
   params.append('from', from);
   params.append('to', to);

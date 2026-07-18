@@ -1,7 +1,13 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
-import { useProject, useProjectMembers, useShareProject, useUnshareProject, useProjectBudget } from '../api/projects';
+import {
+  useProject,
+  useProjectMembers,
+  useShareProject,
+  useUnshareProject,
+  useProjectBudget,
+} from '../api/projects';
 import { useProjectTime, useProjectTasks, exportProjectTasks } from '../api/tasks';
 import TeamDashboard from '../components/TeamDashboard';
 import { formatTime } from '../utils/datetime';
@@ -57,7 +63,9 @@ function ProjectDetailPage() {
   const isOwner = project?.ownerId === user?.id;
 
   const uniqueUsers = tasks
-    ? Array.from(new Map(tasks.map((t) => [t.userId, { id: t.userId, username: t.username }])).values())
+    ? Array.from(
+        new Map(tasks.map(t => [t.userId, { id: t.userId, username: t.username }])).values()
+      )
     : [];
 
   const handleShare = async (e: React.FormEvent) => {
@@ -84,7 +92,11 @@ function ProjectDetailPage() {
   return (
     <section className="page-stack">
       <header className="page-header">
-        <button type="button" className="secondary-button small" onClick={() => navigate('/projects')}>
+        <button
+          type="button"
+          className="secondary-button small"
+          onClick={() => navigate('/projects')}
+        >
           Back to projects
         </button>
         <p className="eyebrow">Project</p>
@@ -94,7 +106,10 @@ function ProjectDetailPage() {
           <p className="project-meta">
             Owner: <strong>{project.ownerUsername}</strong>
             {members && members.length > 0 && (
-              <span> | Shared with {members.length} user{members.length > 1 ? 's' : ''}</span>
+              <span>
+                {' '}
+                | Shared with {members.length} user{members.length > 1 ? 's' : ''}
+              </span>
             )}
           </p>
         )}
@@ -122,7 +137,7 @@ function ProjectDetailPage() {
                   background:
                     budget.spentSeconds / 3600 > budget.budgetHours
                       ? '#dc2626'
-                      : (budget.spentSeconds / 3600) / budget.budgetHours >= 0.8
+                      : budget.spentSeconds / 3600 / budget.budgetHours >= 0.8
                         ? '#f59e0b'
                         : '#2563eb',
                   borderRadius: '4px',
@@ -133,13 +148,22 @@ function ProjectDetailPage() {
             {budget.spentSeconds / 3600 > budget.budgetHours && (
               <small style={{ color: '#dc2626' }}>Over budget</small>
             )}
-            {(budget.spentSeconds / 3600) / budget.budgetHours >= 0.8 && budget.spentSeconds / 3600 <= budget.budgetHours && (
-              <small style={{ color: '#f59e0b' }}>Approaching limit</small>
-            )}
+            {budget.spentSeconds / 3600 / budget.budgetHours >= 0.8 &&
+              budget.spentSeconds / 3600 <= budget.budgetHours && (
+                <small style={{ color: '#f59e0b' }}>Approaching limit</small>
+              )}
           </div>
         )}
 
-        <div className="tab-nav" style={{ marginTop: '16px', display: 'flex', gap: '8px', borderBottom: '2px solid #e5e7eb' }}>
+        <div
+          className="tab-nav"
+          style={{
+            marginTop: '16px',
+            display: 'flex',
+            gap: '8px',
+            borderBottom: '2px solid #e5e7eb',
+          }}
+        >
           <button
             type="button"
             onClick={() => setActiveTab('overview')}
@@ -147,7 +171,8 @@ function ProjectDetailPage() {
               padding: '8px 16px',
               border: 'none',
               background: 'none',
-              borderBottom: activeTab === 'overview' ? '2px solid #2563eb' : '2px solid transparent',
+              borderBottom:
+                activeTab === 'overview' ? '2px solid #2563eb' : '2px solid transparent',
               color: activeTab === 'overview' ? '#2563eb' : '#6b7280',
               cursor: 'pointer',
               fontWeight: activeTab === 'overview' ? '600' : '400',
@@ -185,7 +210,7 @@ function ProjectDetailPage() {
                     type="text"
                     placeholder="Enter username to invite"
                     value={shareUsername}
-                    onChange={(e) => setShareUsername(e.target.value)}
+                    onChange={e => setShareUsername(e.target.value)}
                     className="share-input"
                   />
                   <button
@@ -202,7 +227,7 @@ function ProjectDetailPage() {
                 <div className="member-list" style={{ marginTop: 12 }}>
                   <h3>Members</h3>
                   <div className="task-list">
-                    {members.map((member) => (
+                    {members.map(member => (
                       <article className="task-row" key={member.id}>
                         <div>
                           <strong>{member.username}</strong>
@@ -228,11 +253,15 @@ function ProjectDetailPage() {
               <h2>Project members</h2>
               <div className="task-list">
                 <article className="task-row">
-                  <div><strong>{project?.ownerUsername}</strong> <span>(owner)</span></div>
+                  <div>
+                    <strong>{project?.ownerUsername}</strong> <span>(owner)</span>
+                  </div>
                 </article>
-                {members.map((member) => (
+                {members.map(member => (
                   <article className="task-row" key={member.id}>
-                    <div><strong>{member.username}</strong></div>
+                    <div>
+                      <strong>{member.username}</strong>
+                    </div>
                   </article>
                 ))}
               </div>
@@ -240,14 +269,26 @@ function ProjectDetailPage() {
           )}
 
           <article className="panel">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                flexWrap: 'wrap',
+                gap: 12,
+              }}
+            >
               <h2 style={{ margin: 0 }}>Select time frame</h2>
               <button
                 type="button"
                 className="secondary-button"
                 onClick={async () => {
                   try {
-                    const blob = await exportProjectTasks(projectId, new Date(from).toISOString(), new Date(to).toISOString());
+                    const blob = await exportProjectTasks(
+                      projectId,
+                      new Date(from).toISOString(),
+                      new Date(to).toISOString()
+                    );
                     const url = window.URL.createObjectURL(blob);
                     const a = document.createElement('a');
                     a.href = url;
@@ -265,19 +306,11 @@ function ProjectDetailPage() {
             <div className="date-range">
               <label>
                 From
-                <input
-                  type="datetime-local"
-                  value={from}
-                  onChange={(e) => setFrom(e.target.value)}
-                />
+                <input type="datetime-local" value={from} onChange={e => setFrom(e.target.value)} />
               </label>
               <label>
                 To
-                <input
-                  type="datetime-local"
-                  value={to}
-                  onChange={(e) => setTo(e.target.value)}
-                />
+                <input type="datetime-local" value={to} onChange={e => setTo(e.target.value)} />
               </label>
             </div>
           </article>
@@ -300,7 +333,15 @@ function ProjectDetailPage() {
               </div>
 
               <article className="panel">
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    flexWrap: 'wrap',
+                    gap: 12,
+                  }}
+                >
                   <h2 style={{ margin: 0 }}>Tracked tasks</h2>
                   {uniqueUsers.length > 0 && (
                     <label className="timer-recent-label" style={{ maxWidth: 280 }}>
@@ -308,11 +349,15 @@ function ProjectDetailPage() {
                       <select
                         className="timer-recent-select"
                         value={filterUserId ?? ''}
-                        onChange={(e) => setFilterUserId(e.target.value ? Number(e.target.value) : null)}
+                        onChange={e =>
+                          setFilterUserId(e.target.value ? Number(e.target.value) : null)
+                        }
                       >
                         <option value="">All users</option>
-                        {uniqueUsers.map((u) => (
-                          <option key={u.id} value={u.id}>{u.username}</option>
+                        {uniqueUsers.map(u => (
+                          <option key={u.id} value={u.id}>
+                            {u.username}
+                          </option>
                         ))}
                       </select>
                     </label>
@@ -331,14 +376,16 @@ function ProjectDetailPage() {
                       </tr>
                     </thead>
                     <tbody>
-                      {tasks.map((task) => (
+                      {tasks.map(task => (
                         <tr key={task.id}>
                           <td>{task.description}</td>
                           <td>{task.username}</td>
                           <td>{formatTime(task.startTime, user?.timezone)}</td>
-                          <td>{task.endTime ? formatTime(task.endTime, user?.timezone) : 'Running'}</td>
+                          <td>
+                            {task.endTime ? formatTime(task.endTime, user?.timezone) : 'Running'}
+                          </td>
                           <td>{formatDuration(task.durationSeconds)}</td>
-                          <td>{task.projects.map((p) => p.name).join(', ') || '-'}</td>
+                          <td>{task.projects.map(p => p.name).join(', ') || '-'}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -351,10 +398,7 @@ function ProjectDetailPage() {
           )}
         </>
       ) : (
-        <TeamDashboard
-          projectId={projectId}
-          ownerUsername={project?.ownerUsername ?? ''}
-        />
+        <TeamDashboard projectId={projectId} ownerUsername={project?.ownerUsername ?? ''} />
       )}
     </section>
   );

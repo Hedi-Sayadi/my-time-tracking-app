@@ -20,7 +20,8 @@ export default defineConfig({
   ],
 
   webServer: {
-    command: 'cd ../backend && ./mvnw spring-boot:run -Dspring-boot.run.profiles=test & cd ../frontend && npm run dev',
+    command:
+      'cd ../backend && ./mvnw spring-boot:run -Dspring-boot.run.profiles=test & cd ../frontend && npm run dev',
     url: 'http://localhost:3000',
     reuseExistingServer: !process.env.CI,
     timeout: 120 * 1000,

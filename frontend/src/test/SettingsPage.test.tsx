@@ -97,7 +97,10 @@ describe('SettingsPage', () => {
 
   it('saves the weekly goal and shows success message', async () => {
     const mutateAsync = vi.fn().mockResolvedValue(user);
-    vi.spyOn(authApi, 'useUpdateWeeklyGoal').mockReturnValue({ ...mutationMock(), mutateAsync } as any);
+    vi.spyOn(authApi, 'useUpdateWeeklyGoal').mockReturnValue({
+      ...mutationMock(),
+      mutateAsync,
+    } as any);
 
     render(<SettingsPage />, { wrapper });
 
@@ -112,7 +115,10 @@ describe('SettingsPage', () => {
 
   it('changes timezone and shows success message', async () => {
     const mutateAsync = vi.fn().mockResolvedValue(user);
-    vi.spyOn(authApi, 'useUpdateTimezone').mockReturnValue({ ...mutationMock(), mutateAsync } as any);
+    vi.spyOn(authApi, 'useUpdateTimezone').mockReturnValue({
+      ...mutationMock(),
+      mutateAsync,
+    } as any);
 
     render(<SettingsPage />, { wrapper });
 
@@ -126,7 +132,10 @@ describe('SettingsPage', () => {
 
   it('should show error when timezone save fails', async () => {
     const mutateAsync = vi.fn().mockRejectedValue(new Error('fail'));
-    vi.spyOn(authApi, 'useUpdateTimezone').mockReturnValue({ ...mutationMock(), mutateAsync } as any);
+    vi.spyOn(authApi, 'useUpdateTimezone').mockReturnValue({
+      ...mutationMock(),
+      mutateAsync,
+    } as any);
 
     render(<SettingsPage />, { wrapper });
 
@@ -139,7 +148,10 @@ describe('SettingsPage', () => {
 
   it('should show error when goal save fails', async () => {
     const mutateAsync = vi.fn().mockRejectedValue(new Error('fail'));
-    vi.spyOn(authApi, 'useUpdateWeeklyGoal').mockReturnValue({ ...mutationMock(), mutateAsync } as any);
+    vi.spyOn(authApi, 'useUpdateWeeklyGoal').mockReturnValue({
+      ...mutationMock(),
+      mutateAsync,
+    } as any);
 
     render(<SettingsPage />, { wrapper });
 
@@ -151,7 +163,14 @@ describe('SettingsPage', () => {
   });
 
   it('should handle user with null timezone and goal', () => {
-    const userNoTz = { id: 1, username: 'tester', email: 't@t.com', timezone: null, weeklyTargetHours: null, createdAt: '2024-01-01T00:00:00Z' };
+    const userNoTz = {
+      id: 1,
+      username: 'tester',
+      email: 't@t.com',
+      timezone: null,
+      weeklyTargetHours: null,
+      createdAt: '2024-01-01T00:00:00Z',
+    };
     vi.spyOn(authApi, 'useCurrentUser').mockReturnValue(useQueryMock(userNoTz) as any);
 
     render(<SettingsPage />, { wrapper });

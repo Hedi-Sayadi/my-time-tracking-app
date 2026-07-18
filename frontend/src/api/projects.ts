@@ -97,7 +97,13 @@ export const useDeleteProject = () => {
 export const useShareProject = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id, username }: { id: number; username: string }): Promise<ProjectMember> => {
+    mutationFn: async ({
+      id,
+      username,
+    }: {
+      id: number;
+      username: string;
+    }): Promise<ProjectMember> => {
       const response = await apiClient.post(`/projects/${id}/share`, { username });
       return response.data;
     },

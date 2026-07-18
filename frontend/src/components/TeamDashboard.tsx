@@ -39,15 +39,19 @@ function TeamDashboard({ projectId, ownerUsername }: TeamDashboardProps) {
         {!contributions || contributions.length === 0 ? (
           <p>No contributions recorded yet.</p>
         ) : (
-          contributions.map((member) => {
+          contributions.map(member => {
             const pct = totalSeconds > 0 ? (member.totalDurationSeconds / totalSeconds) * 100 : 0;
             return (
               <article key={member.userId} className="panel" style={{ marginBottom: '12px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div
+                  style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+                >
                   <div>
                     <strong>{member.username}</strong>
                     {member.username === ownerUsername && (
-                      <span style={{ marginLeft: '8px', color: '#6b7280', fontSize: '12px' }}>(owner)</span>
+                      <span style={{ marginLeft: '8px', color: '#6b7280', fontSize: '12px' }}>
+                        (owner)
+                      </span>
                     )}
                   </div>
                   <div style={{ textAlign: 'right' }}>
@@ -76,9 +80,7 @@ function TeamDashboard({ projectId, ownerUsername }: TeamDashboardProps) {
                     }}
                   />
                 </div>
-                <small style={{ color: '#6b7280' }}>
-                  {pct.toFixed(1)}% of total project time
-                </small>
+                <small style={{ color: '#6b7280' }}>{pct.toFixed(1)}% of total project time</small>
               </article>
             );
           })

@@ -12,32 +12,30 @@ test.describe('Dashboard', () => {
   });
 
   test('weekly goal ring is visible', async ({ page }) => {
-    const goalRing = page.locator(
-      '[data-testid="weekly-goal"], .weekly-goal, .goal-ring, [aria-label*="weekly goal" i]'
-    ).first();
+    const goalRing = page
+      .locator(
+        '[data-testid="weekly-goal"], .weekly-goal, .goal-ring, [aria-label*="weekly goal" i]'
+      )
+      .first();
     await expect(goalRing).toBeVisible();
   });
 
   test('metric cards are displayed', async ({ page }) => {
-    const metricCard = page.locator(
-      '.metric-card, [data-testid="metric-card"], .card'
-    ).first();
+    const metricCard = page.locator('.metric-card, [data-testid="metric-card"], .card').first();
     await expect(metricCard).toBeVisible();
   });
 
   test('timer card is visible', async ({ page }) => {
-    const timerCard = page.locator(
-      '[data-testid="timer-card"], .timer-card, .timer'
-    ).first();
+    const timerCard = page.locator('[data-testid="timer-card"], .timer-card, .timer').first();
     await expect(timerCard).toBeVisible();
 
     await expect(page.getByRole('button', { name: /start timer/i })).toBeVisible();
   });
 
   test('project list is displayed on dashboard', async ({ page }) => {
-    const projectSection = page.locator(
-      '[data-testid="dashboard-projects"], .dashboard-projects, .projects-list'
-    ).first();
+    const projectSection = page
+      .locator('[data-testid="dashboard-projects"], .dashboard-projects, .projects-list')
+      .first();
     await expect(projectSection).toBeVisible();
   });
 });

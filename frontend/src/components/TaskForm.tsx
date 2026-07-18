@@ -17,7 +17,7 @@ function TaskForm({ initialData, onSuccess, onCancel }: TaskFormProps) {
     initialData?.endTime ? new Date(initialData.endTime).toISOString().slice(0, 16) : ''
   );
   const [projectIds, setProjectIds] = useState<number[]>(
-    initialData?.projects?.map((p) => p.id) ?? []
+    initialData?.projects?.map(p => p.id) ?? []
   );
   const [error, setError] = useState('');
 
@@ -55,9 +55,7 @@ function TaskForm({ initialData, onSuccess, onCancel }: TaskFormProps) {
   };
 
   const toggleProject = (id: number) => {
-    setProjectIds((prev) =>
-      prev.includes(id) ? prev.filter((pid) => pid !== id) : [...prev, id]
-    );
+    setProjectIds(prev => (prev.includes(id) ? prev.filter(pid => pid !== id) : [...prev, id]));
   };
 
   return (
@@ -68,7 +66,7 @@ function TaskForm({ initialData, onSuccess, onCancel }: TaskFormProps) {
         <input
           type="text"
           value={description}
-          onChange={(e) => setDescription(e.target.value)}
+          onChange={e => setDescription(e.target.value)}
           required
         />
       </label>
@@ -77,23 +75,19 @@ function TaskForm({ initialData, onSuccess, onCancel }: TaskFormProps) {
         <input
           type="datetime-local"
           value={startTime}
-          onChange={(e) => setStartTime(e.target.value)}
+          onChange={e => setStartTime(e.target.value)}
           required
         />
       </label>
       <label>
         End time (optional)
-        <input
-          type="datetime-local"
-          value={endTime}
-          onChange={(e) => setEndTime(e.target.value)}
-        />
+        <input type="datetime-local" value={endTime} onChange={e => setEndTime(e.target.value)} />
       </label>
       {projects && projects.length > 0 && (
         <fieldset className="project-fieldset">
           <legend>Related projects</legend>
           <div className="project-checkboxes">
-            {projects.map((project) => (
+            {projects.map(project => (
               <label key={project.id} className="project-checkbox">
                 <input
                   type="checkbox"
@@ -107,7 +101,11 @@ function TaskForm({ initialData, onSuccess, onCancel }: TaskFormProps) {
         </fieldset>
       )}
       <div className="form-actions">
-        <button type="submit" className="primary-button" disabled={createTask.isPending || updateTask.isPending}>
+        <button
+          type="submit"
+          className="primary-button"
+          disabled={createTask.isPending || updateTask.isPending}
+        >
           {isEdit ? 'Update task' : 'Add task'}
         </button>
         {onCancel && (

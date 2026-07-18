@@ -53,7 +53,12 @@ test.describe('Project management', () => {
     await page.getByRole('button', { name: /new project/i }).click();
     await page.getByLabel(/name/i).fill(projectName);
     await page.getByLabel(/description/i).fill('Project for budget progress test');
-    if (await page.getByLabel(/time budget/i).isVisible().catch(() => false)) {
+    if (
+      await page
+        .getByLabel(/time budget/i)
+        .isVisible()
+        .catch(() => false)
+    ) {
       await page.getByLabel(/time budget/i).fill('10');
     }
     await page.getByRole('button', { name: /create/i }).click();

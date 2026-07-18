@@ -1,8 +1,20 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useProjects, useCreateProject, useUpdateProject, useDeleteProject, type Project } from '../api/projects';
+import {
+  useProjects,
+  useCreateProject,
+  useUpdateProject,
+  useDeleteProject,
+  type Project,
+} from '../api/projects';
 
-function BudgetBar({ budgetHours, spentSeconds }: { budgetHours: number | null; spentSeconds: number | null }) {
+function BudgetBar({
+  budgetHours,
+  spentSeconds,
+}: {
+  budgetHours: number | null;
+  spentSeconds: number | null;
+}) {
   if (!budgetHours || budgetHours <= 0) return null;
   const spentHours = (spentSeconds ?? 0) / 3600;
   const pct = Math.min(100, (spentHours / budgetHours) * 100);
@@ -31,7 +43,8 @@ function BudgetBar({ budgetHours, spentSeconds }: { budgetHours: number | null; 
         />
       </div>
       <small style={{ color: over ? '#dc2626' : warning ? '#f59e0b' : '#6b7280' }}>
-        {spentHours.toFixed(1)}h / {budgetHours}h {over ? '(over budget)' : warning ? '(approaching limit)' : ''}
+        {spentHours.toFixed(1)}h / {budgetHours}h{' '}
+        {over ? '(over budget)' : warning ? '(approaching limit)' : ''}
       </small>
     </div>
   );
@@ -50,7 +63,7 @@ function ProjectItem({
 }) {
   const deleteProject = useDeleteProject();
   const navigate = useNavigate();
-  const subprojects = allProjects.filter((p) => p.parentId === project.id);
+  const subprojects = allProjects.filter(p => p.parentId === project.id);
 
   return (
     <div className="project-item" style={{ marginLeft: depth * 20 }}>
@@ -84,8 +97,14 @@ function ProjectItem({
           </button>
         </div>
       </article>
-      {subprojects.map((sub) => (
-        <ProjectItem key={sub.id} project={sub} depth={depth + 1} allProjects={allProjects} onEdit={onEdit} />
+      {subprojects.map(sub => (
+        <ProjectItem
+          key={sub.id}
+          project={sub}
+          depth={depth + 1}
+          allProjects={allProjects}
+          onEdit={onEdit}
+        />
       ))}
     </div>
   );
@@ -103,7 +122,7 @@ function ProjectsPage() {
   const [budgetHours, setBudgetHours] = useState<string>('');
   const [error, setError] = useState('');
 
-  const rootProjects = projects?.filter((p) => p.parentId === null) ?? [];
+  const rootProjects = projects?.filter(p => p.parentId === null) ?? [];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -160,7 +179,14 @@ function ProjectsPage() {
       </header>
 
       <div className="page-actions">
-        <button type="button" className="primary-button" onClick={() => { resetForm(); setShowForm(true); }}>
+        <button
+          type="button"
+          className="primary-button"
+          onClick={() => {
+            resetForm();
+            setShowForm(true);
+          }}
+        >
           New project
         </button>
       </div>
@@ -172,19 +198,23 @@ function ProjectsPage() {
             {error && <p className="error">{error}</p>}
             <label>
               Name
-              <input type="text" value={name} onChange={(e) => setName(e.target.value)} required />
+              <input type="text" value={name} onChange={e => setName(e.target.value)} required />
             </label>
             <label>
               Description
-              <input type="text" value={description} onChange={(e) => setDescription(e.target.value)} />
+              <input
+                type="text"
+                value={description}
+                onChange={e => setDescription(e.target.value)}
+              />
             </label>
             <label>
               Parent project (optional)
-              <select value={parentId} onChange={(e) => setParentId(e.target.value)}>
+              <select value={parentId} onChange={e => setParentId(e.target.value)}>
                 <option value="">None</option>
                 {projects
-                  ?.filter((p) => p.id !== editing?.id)
-                  .map((p) => (
+                  ?.filter(p => p.id !== editing?.id)
+                  .map(p => (
                     <option key={p.id} value={p.id}>
                       {p.name}
                     </option>
@@ -197,12 +227,16 @@ function ProjectsPage() {
                 type="number"
                 min="0"
                 value={budgetHours}
-                onChange={(e) => setBudgetHours(e.target.value)}
+                onChange={e => setBudgetHours(e.target.value)}
                 placeholder="e.g. 20"
               />
             </label>
             <div className="form-actions">
-              <button type="submit" className="primary-button" disabled={createProject.isPending || updateProject.isPending}>
+              <button
+                type="submit"
+                className="primary-button"
+                disabled={createProject.isPending || updateProject.isPending}
+              >
                 {editing ? 'Update' : 'Create'}
               </button>
               <button type="button" className="secondary-button" onClick={resetForm}>
@@ -221,8 +255,14 @@ function ProjectsPage() {
           <p>No projects yet. Create one to get started.</p>
         ) : (
           <div className="project-list">
-            {rootProjects.map((project) => (
-              <ProjectItem key={project.id} project={project} depth={0} allProjects={projects ?? []} onEdit={handleEdit} />
+            {rootProjects.map(project => (
+              <ProjectItem
+                key={project.id}
+                project={project}
+                depth={0}
+                allProjects={projects ?? []}
+                onEdit={handleEdit}
+              />
             ))}
           </div>
         )}
