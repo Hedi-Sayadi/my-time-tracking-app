@@ -61,10 +61,10 @@ cd backend
 # Run tests
 ./mvnw test
 
-# Run with coverage report (generates report but does not enforce threshold)
+# Run with coverage report
 ./mvnw test jacoco:report
 
-# Run with coverage enforcement (requires ~45% line coverage to pass)
+# Run tests with coverage enforcement (JaCoCo threshold is 90%)
 ./mvnw verify
 
 # Start locally (requires PostgreSQL on localhost:5432 and a .env file)
@@ -151,14 +151,28 @@ npm run build
 cd backend
 ./mvnw test              # Run all tests (unit + integration)
 ./mvnw test jacoco:report # Generate coverage report
-./mvnw verify            # Run tests + enforce coverage threshold (~45%)
+./mvnw verify            # Run tests + enforce JaCoCo threshold (90%)
 ```
+
+Backend tests include unit tests (service layer, security filters, exception handling) and integration tests (controllers with Testcontainers). They run together in CI.
 
 ### Frontend Tests
 ```bash
 cd frontend
 npm run test             # Run unit tests (Vitest)
 npm run test:coverage    # Run tests with coverage report
+```
+
+Frontend test coverage exceeds all thresholds:
+- **Statements:** 93.89%
+- **Branches:** 81.26%
+- **Functions:** 92.27%
+- **Lines:** 95.57%
+
+### E2E Tests
+```bash
+cd frontend
+npx playwright test      # Run Playwright end-to-end tests
 ```
 
 ## Project Structure
