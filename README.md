@@ -2,6 +2,8 @@
 
 A full-stack time tracking web application for individuals (students, freelancers, researchers) to track time spent on lectures, seminars, projects, and other activities.
 
+> **Related project:** The Todo App setup instructions are also available in this repository — see [`TODO-APP-README.md`](TODO-APP-README.md).
+
 ## Prerequisites
 
 - **Docker & Docker Compose** (only requirement for the Docker path)
