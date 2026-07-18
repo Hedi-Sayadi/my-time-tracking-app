@@ -87,6 +87,12 @@ npm run dev
 # Run linter
 npm run lint
 
+# Format code
+npm run format
+
+# Check formatting
+npm run format:check
+
 # Run tests
 npm run test
 
