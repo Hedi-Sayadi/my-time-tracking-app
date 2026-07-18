@@ -25,7 +25,9 @@ test.describe('Time tracking flow', () => {
 
     await expect(page.getByText(/running now/i)).toBeVisible();
 
-    const elapsed = page.locator('[data-testid="elapsed-time"], .timer-display, .elapsed-time').first();
+    const elapsed = page
+      .locator('[data-testid="elapsed-time"], .timer-display, .elapsed-time')
+      .first();
     await expect(elapsed).toBeVisible();
   });
 

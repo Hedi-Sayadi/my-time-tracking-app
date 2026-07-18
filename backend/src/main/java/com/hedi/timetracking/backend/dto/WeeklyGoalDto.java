@@ -7,10 +7,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class WeeklyGoalDto {
 
-    private Integer targetHours;
-    private Long spentSeconds;
-    private Double progressPercent;
-    private String weekStart;
-    private String weekEnd;
-
+  private Integer targetHours;
+  private Long spentSeconds;
+  private Double progressPercent;
+  private String weekStart;
+  private String weekEnd;
 }

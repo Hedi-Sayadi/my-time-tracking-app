@@ -105,7 +105,9 @@ describe('TasksPage', () => {
     render(<TasksPage />, { wrapper });
 
     expect(screen.getByText('Tasks')).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: /review, edit, and organize/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { name: /review, edit, and organize/i })
+    ).toBeInTheDocument();
   });
 
   it('renders the add manual entry button', () => {

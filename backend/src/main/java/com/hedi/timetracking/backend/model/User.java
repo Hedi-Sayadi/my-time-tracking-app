@@ -1,13 +1,12 @@
 package com.hedi.timetracking.backend.model;
 
 import jakarta.persistence.*;
-import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity
 @Table(name = "users")
@@ -18,39 +17,46 @@ import java.util.List;
 @Builder
 public class User {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    @Column(nullable = false, unique = true)
-    private String username;
+  @Column(nullable = false, unique = true)
+  private String username;
 
-    @Column(nullable = false, unique = true)
-    private String email;
+  @Column(nullable = false, unique = true)
+  private String email;
 
-    @Column(nullable = false, name = "password_hash")
-    private String passwordHash;
+  @Column(nullable = false, name = "password_hash")
+  private String passwordHash;
 
-    @Column(name = "timezone")
-    private String timezone;
+  @Column(name = "timezone")
+  private String timezone;
 
-    @Column(name = "weekly_target_hours")
-    private Integer weeklyTargetHours;
+  @Column(name = "weekly_target_hours")
+  private Integer weeklyTargetHours;
 
-    @CreationTimestamp
-    @Column(nullable = false, updatable = false, name = "created_at")
-    private Instant createdAt;
+  @CreationTimestamp
+  @Column(nullable = false, updatable = false, name = "created_at")
+  private Instant createdAt;
 
-    @UpdateTimestamp
-    @Column(nullable = false, name = "updated_at")
-    private Instant updatedAt;
+  @UpdateTimestamp
+  @Column(nullable = false, name = "updated_at")
+  private Instant updatedAt;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @Builder.Default
-    private List<Project> projects = new ArrayList<>();
+  @OneToMany(
+      mappedBy = "user",
+      cascade = CascadeType.ALL,
+      orphanRemoval = true,
+      fetch = FetchType.LAZY)
+  @Builder.Default
+  private List<Project> projects = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @Builder.Default
-    private List<Task> tasks = new ArrayList<>();
-
+  @OneToMany(
+      mappedBy = "user",
+      cascade = CascadeType.ALL,
+      orphanRemoval = true,
+      fetch = FetchType.LAZY)
+  @Builder.Default
+  private List<Task> tasks = new ArrayList<>();
 }

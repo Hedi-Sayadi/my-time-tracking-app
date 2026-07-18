@@ -1,5 +1,12 @@
 import { useState, useEffect } from 'react';
-import { useActiveTask, useStartTask, useStopTask, useResumeTask, useDeleteTask, useTasks } from '../api/tasks';
+import {
+  useActiveTask,
+  useStartTask,
+  useStopTask,
+  useResumeTask,
+  useDeleteTask,
+  useTasks,
+} from '../api/tasks';
 import { useProjects } from '../api/projects';
 import { useAuth } from '../hooks/useAuth';
 import type { Task } from '../api/tasks';
@@ -20,7 +27,7 @@ function TimerCard() {
   const deleteTask = useDeleteTask();
   const { data: projects } = useProjects();
   const { data: allTasks } = useTasks();
-  const myTasks = allTasks?.filter((t) => t.userId === user?.id);
+  const myTasks = allTasks?.filter(t => t.userId === user?.id);
 
   const [description, setDescription] = useState('');
   const [projectIds, setProjectIds] = useState<number[]>([]);
@@ -77,9 +84,7 @@ function TimerCard() {
   };
 
   const toggleProject = (id: number) => {
-    setProjectIds((prev) =>
-      prev.includes(id) ? prev.filter((pid) => pid !== id) : [...prev, id]
-    );
+    setProjectIds(prev => (prev.includes(id) ? prev.filter(pid => pid !== id) : [...prev, id]));
   };
 
   const selectRecentTask = (desc: string) => {
@@ -88,10 +93,10 @@ function TimerCard() {
       setProjectIds([]);
       return;
     }
-    const task = recentTasks.find((t) => t.description === desc);
+    const task = recentTasks.find(t => t.description === desc);
     if (task) {
       setDescription(task.description);
-      setProjectIds(task.projects.map((p) => p.id));
+      setProjectIds(task.projects.map(p => p.id));
     }
   };
 
@@ -107,11 +112,13 @@ function TimerCard() {
   const isPaused = !!pausedTask && !isRunning;
 
   const recentTasks = myTasks
-    ? [...new Map(
-        [...myTasks]
-          .sort((a, b) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime())
-          .map((t) => [t.description, t])
-      ).values()].slice(0, 10)
+    ? [
+        ...new Map(
+          [...myTasks]
+            .sort((a, b) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime())
+            .map(t => [t.description, t])
+        ).values(),
+      ].slice(0, 10)
     : [];
 
   return (
@@ -122,8 +129,10 @@ function TimerCard() {
           <h2 className="timer-task-name">{activeTask!.description}</h2>
           {activeTask!.projects.length > 0 && (
             <div className="timer-projects">
-              {activeTask!.projects.map((p) => (
-                <span key={p.id} className="project-pill">{p.name}</span>
+              {activeTask!.projects.map(p => (
+                <span key={p.id} className="project-pill">
+                  {p.name}
+                </span>
               ))}
             </div>
           )}
@@ -134,8 +143,10 @@ function TimerCard() {
           <h2 className="timer-task-name">{pausedTask.description}</h2>
           {pausedTask.projects.length > 0 && (
             <div className="timer-projects">
-              {pausedTask.projects.map((p) => (
-                <span key={p.id} className="project-pill">{p.name}</span>
+              {pausedTask.projects.map(p => (
+                <span key={p.id} className="project-pill">
+                  {p.name}
+                </span>
               ))}
             </div>
           )}
@@ -155,25 +166,38 @@ function TimerCard() {
               ? formatDuration(pausedTask!.durationSeconds)
               : '00:00:00'}
         </span>
-        <small>
-          {isRunning ? 'Timer running' : isPaused ? 'Paused' : 'Ready'}
-        </small>
+        <small>{isRunning ? 'Timer running' : isPaused ? 'Paused' : 'Ready'}</small>
       </div>
 
       <div className="timer-actions">
         {isRunning ? (
-          <button type="button" className="stop-button" onClick={handleStop} disabled={stopTask.isPending}>
+          <button
+            type="button"
+            className="stop-button"
+            onClick={handleStop}
+            disabled={stopTask.isPending}
+          >
             {stopTask.isPending ? 'Stopping...' : 'Stop timer'}
           </button>
         ) : isPaused ? (
           <div className="timer-pause-actions">
-            <button type="button" className="primary-button" onClick={handleResume} disabled={resumeTask.isPending}>
+            <button
+              type="button"
+              className="primary-button"
+              onClick={handleResume}
+              disabled={resumeTask.isPending}
+            >
               {resumeTask.isPending ? 'Resuming...' : 'Resume'}
             </button>
             <button type="button" className="secondary-button" onClick={handleLogTime}>
               Log time
             </button>
-            <button type="button" className="danger-button" onClick={handleCancel} disabled={deleteTask.isPending}>
+            <button
+              type="button"
+              className="danger-button"
+              onClick={handleCancel}
+              disabled={deleteTask.isPending}
+            >
               {deleteTask.isPending ? 'Cancelling...' : 'Cancel'}
             </button>
           </div>
@@ -185,14 +209,16 @@ function TimerCard() {
                   Or continue a recent task
                   <select
                     className="timer-recent-select"
-                    onChange={(e) => selectRecentTask(e.target.value)}
+                    onChange={e => selectRecentTask(e.target.value)}
                     value={description || '0'}
                   >
                     <option value="0">— New task —</option>
-                    {recentTasks.map((task) => (
+                    {recentTasks.map(task => (
                       <option key={task.id} value={task.description}>
                         {task.description}
-                        {task.projects.length > 0 ? ` (${task.projects.map((p) => p.name).join(', ')})` : ''}
+                        {task.projects.length > 0
+                          ? ` (${task.projects.map(p => p.name).join(', ')})`
+                          : ''}
                       </option>
                     ))}
                   </select>
@@ -204,7 +230,7 @@ function TimerCard() {
               type="text"
               placeholder="What are you working on?"
               value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              onChange={e => setDescription(e.target.value)}
               className="timer-input"
             />
 
@@ -212,7 +238,7 @@ function TimerCard() {
               <div className="timer-project-select">
                 <span className="timer-project-label">Projects:</span>
                 <div className="timer-project-checkboxes">
-                  {projects.map((project) => (
+                  {projects.map(project => (
                     <label key={project.id} className="project-checkbox-inline">
                       <input
                         type="checkbox"
@@ -227,13 +253,18 @@ function TimerCard() {
             )}
 
             <div className="timer-main-actions">
-              <button type="button" className="primary-button" onClick={handleStart} disabled={startTask.isPending}>
+              <button
+                type="button"
+                className="primary-button"
+                onClick={handleStart}
+                disabled={startTask.isPending}
+              >
                 {startTask.isPending ? 'Starting...' : 'Start timer'}
               </button>
               <button
                 type="button"
                 className="secondary-button"
-                onClick={() => window.location.href = '/tasks'}
+                onClick={() => (window.location.href = '/tasks')}
                 title="Manually log a past or offline time entry"
               >
                 Add entry

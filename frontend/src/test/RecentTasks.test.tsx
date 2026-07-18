@@ -29,9 +29,7 @@ const useQueryMock = (data: any) => ({
   promise: Promise.resolve(null),
 });
 
-const wrapper = ({ children }: { children: ReactNode }) => (
-  <AuthProvider>{children}</AuthProvider>
-);
+const wrapper = ({ children }: { children: ReactNode }) => <AuthProvider>{children}</AuthProvider>;
 
 const tasks = [
   {

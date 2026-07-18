@@ -17,7 +17,7 @@ describe('apiClient', () => {
 
   it('should add Authorization header when token exists', async () => {
     localStorage.setItem('token', 'test-token');
-    
+
     // The interceptor should add the header
     const request = { headers: {} as Record<string, string> };
     // Simulate what the interceptor does
@@ -32,18 +32,18 @@ describe('apiClient', () => {
 
   it('should remove token and redirect on 401', async () => {
     localStorage.setItem('token', 'test-token');
-    
+
     // Mock a 401 response
     const mockError = {
       response: { status: 401 },
     };
-    
+
     // Simulate interceptor behavior
     if (mockError.response?.status === 401) {
       localStorage.removeItem('token');
       window.location.href = '/login';
     }
-    
+
     expect(localStorage.getItem('token')).toBeNull();
     expect(window.location.href).toBe('/login');
   });

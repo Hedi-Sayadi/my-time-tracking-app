@@ -22,7 +22,7 @@ function ReportsPage() {
       </header>
 
       <div className="page-actions">
-        {(['today', 'week', 'month'] as const).map((p) => (
+        {(['today', 'week', 'month'] as const).map(p => (
           <button
             key={p}
             type="button"
@@ -36,7 +36,11 @@ function ReportsPage() {
 
       <article className="panel">
         <h2>
-          {period === 'today' ? "Today's summary" : period === 'week' ? 'Weekly summary' : 'Monthly summary'}
+          {period === 'today'
+            ? "Today's summary"
+            : period === 'week'
+              ? 'Weekly summary'
+              : 'Monthly summary'}
         </h2>
         {isLoading ? (
           <p>Loading...</p>
@@ -58,12 +62,11 @@ function ReportsPage() {
                       <strong>{task.description}</strong>
                       <p>
                         {formatTime(task.startTime, user?.timezone)}
-                        {task.endTime && ` → ${formatTime(task.endTime, user?.timezone)}`}
-                        {' '}
-                        ({formatDuration(task.durationSeconds)})
+                        {task.endTime && ` → ${formatTime(task.endTime, user?.timezone)}`} (
+                        {formatDuration(task.durationSeconds)})
                       </p>
                       {task.projects.length > 0 && (
-                        <p className="project-tags">{task.projects.map((p) => p.name).join(', ')}</p>
+                        <p className="project-tags">{task.projects.map(p => p.name).join(', ')}</p>
                       )}
                     </div>
                     <span>{task.running ? 'Running' : 'Completed'}</span>

@@ -22,154 +22,169 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class UserService {
 
-    private final UserRepository userRepository;
-    private final TaskRepository taskRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final JwtUtil jwtUtil;
-    private final AuthenticationManager authenticationManager;
+  private final UserRepository userRepository;
+  private final TaskRepository taskRepository;
+  private final PasswordEncoder passwordEncoder;
+  private final JwtUtil jwtUtil;
+  private final AuthenticationManager authenticationManager;
 
-    @Transactional
-    public AuthResponse register(RegisterRequest request) {
-        if (userRepository.existsByUsername(request.getUsername())) {
-            throw new ConflictException("Username already taken");
-        }
-        if (userRepository.existsByEmail(request.getEmail())) {
-            throw new ConflictException("Email already registered");
-        }
-
-        User user = User.builder()
-                .username(request.getUsername())
-                .email(request.getEmail())
-                .passwordHash(passwordEncoder.encode(request.getPassword()))
-                .build();
-
-        user = userRepository.save(user);
-
-        UserDetails userDetails = org.springframework.security.core.userdetails.User.builder()
-                .username(user.getUsername())
-                .password(user.getPasswordHash())
-                .roles("USER")
-                .build();
-
-        String token = jwtUtil.generateToken(userDetails);
-        return new AuthResponse(token, mapToDto(user));
+  @Transactional
+  public AuthResponse register(RegisterRequest request) {
+    if (userRepository.existsByUsername(request.getUsername())) {
+      throw new ConflictException("Username already taken");
+    }
+    if (userRepository.existsByEmail(request.getEmail())) {
+      throw new ConflictException("Email already registered");
     }
 
-    public AuthResponse login(LoginRequest request) {
-        try {
-            authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
-            );
-        } catch (BadCredentialsException e) {
-            throw new BadCredentialsException("Invalid username or password");
-        }
+    User user =
+        User.builder()
+            .username(request.getUsername())
+            .email(request.getEmail())
+            .passwordHash(passwordEncoder.encode(request.getPassword()))
+            .build();
 
-        User user = userRepository.findByUsername(request.getUsername())
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+    user = userRepository.save(user);
 
-        UserDetails userDetails = org.springframework.security.core.userdetails.User.builder()
-                .username(user.getUsername())
-                .password(user.getPasswordHash())
-                .roles("USER")
-                .build();
+    UserDetails userDetails =
+        org.springframework.security.core.userdetails.User.builder()
+            .username(user.getUsername())
+            .password(user.getPasswordHash())
+            .roles("USER")
+            .build();
 
-        String token = jwtUtil.generateToken(userDetails);
-        return new AuthResponse(token, mapToDto(user));
+    String token = jwtUtil.generateToken(userDetails);
+    return new AuthResponse(token, mapToDto(user));
+  }
+
+  public AuthResponse login(LoginRequest request) {
+    try {
+      authenticationManager.authenticate(
+          new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
+    } catch (BadCredentialsException e) {
+      throw new BadCredentialsException("Invalid username or password");
     }
 
-    public UserDto getCurrentUser() {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
-        return mapToDto(user);
+    User user =
+        userRepository
+            .findByUsername(request.getUsername())
+            .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+    UserDetails userDetails =
+        org.springframework.security.core.userdetails.User.builder()
+            .username(user.getUsername())
+            .password(user.getPasswordHash())
+            .roles("USER")
+            .build();
+
+    String token = jwtUtil.generateToken(userDetails);
+    return new AuthResponse(token, mapToDto(user));
+  }
+
+  public UserDto getCurrentUser() {
+    String username = SecurityContextHolder.getContext().getAuthentication().getName();
+    User user =
+        userRepository
+            .findByUsername(username)
+            .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+    return mapToDto(user);
+  }
+
+  @Transactional
+  public void changePassword(ChangePasswordRequest request) {
+    String username = SecurityContextHolder.getContext().getAuthentication().getName();
+    User user =
+        userRepository
+            .findByUsername(username)
+            .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+    if (!passwordEncoder.matches(request.getOldPassword(), user.getPasswordHash())) {
+      throw new BadCredentialsException("Current password is incorrect");
     }
 
-    @Transactional
-    public void changePassword(ChangePasswordRequest request) {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+    user.setPasswordHash(passwordEncoder.encode(request.getNewPassword()));
+    userRepository.save(user);
+  }
 
-        if (!passwordEncoder.matches(request.getOldPassword(), user.getPasswordHash())) {
-            throw new BadCredentialsException("Current password is incorrect");
-        }
+  @Transactional
+  public UserDto updateTimezone(TimezoneRequest request) {
+    String username = SecurityContextHolder.getContext().getAuthentication().getName();
+    User user =
+        userRepository
+            .findByUsername(username)
+            .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+    user.setTimezone(request.getTimezone());
+    user = userRepository.save(user);
+    return mapToDto(user);
+  }
 
-        user.setPasswordHash(passwordEncoder.encode(request.getNewPassword()));
-        userRepository.save(user);
-    }
+  @Transactional(readOnly = true)
+  public WeeklyGoalDto getWeeklyGoal() {
+    Long userId = getCurrentUserId();
+    User user =
+        userRepository
+            .findById(userId)
+            .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
-    @Transactional
-    public UserDto updateTimezone(TimezoneRequest request) {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
-        user.setTimezone(request.getTimezone());
-        user = userRepository.save(user);
-        return mapToDto(user);
-    }
+    java.time.ZoneId zone =
+        user.getTimezone() != null
+            ? java.time.ZoneId.of(user.getTimezone())
+            : java.time.ZoneId.systemDefault();
 
-    @Transactional(readOnly = true)
-    public WeeklyGoalDto getWeeklyGoal() {
-        Long userId = getCurrentUserId();
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+    java.time.LocalDate today = java.time.LocalDate.now(zone);
+    java.time.LocalDate monday = today.with(java.time.DayOfWeek.MONDAY);
+    java.time.LocalDate sunday = today.with(java.time.DayOfWeek.SUNDAY);
 
-        java.time.ZoneId zone = user.getTimezone() != null
-                ? java.time.ZoneId.of(user.getTimezone())
-                : java.time.ZoneId.systemDefault();
+    java.time.Instant weekStart = monday.atStartOfDay(zone).toInstant();
+    java.time.Instant weekEnd = sunday.plusDays(1).atStartOfDay(zone).toInstant();
 
-        java.time.LocalDate today = java.time.LocalDate.now(zone);
-        java.time.LocalDate monday = today.with(java.time.DayOfWeek.MONDAY);
-        java.time.LocalDate sunday = today.with(java.time.DayOfWeek.SUNDAY);
+    long spentSeconds =
+        taskRepository.findByUserId(userId).stream()
+            .filter(
+                t -> !t.getStartTime().isBefore(weekStart) && t.getStartTime().isBefore(weekEnd))
+            .mapToLong(Task::getDurationSeconds)
+            .sum();
 
-        java.time.Instant weekStart = monday.atStartOfDay(zone).toInstant();
-        java.time.Instant weekEnd = sunday.plusDays(1).atStartOfDay(zone).toInstant();
+    int targetHours = user.getWeeklyTargetHours() != null ? user.getWeeklyTargetHours() : 0;
+    double progressPercent = targetHours > 0 ? (spentSeconds / 3600.0 / targetHours) * 100 : 0;
 
-        long spentSeconds = taskRepository.findByUserId(userId).stream()
-                .filter(t -> !t.getStartTime().isBefore(weekStart) && t.getStartTime().isBefore(weekEnd))
-                .mapToLong(Task::getDurationSeconds)
-                .sum();
+    WeeklyGoalDto dto = new WeeklyGoalDto();
+    dto.setTargetHours(targetHours);
+    dto.setSpentSeconds(spentSeconds);
+    dto.setProgressPercent(progressPercent);
+    dto.setWeekStart(monday.toString());
+    dto.setWeekEnd(sunday.toString());
+    return dto;
+  }
 
-        int targetHours = user.getWeeklyTargetHours() != null ? user.getWeeklyTargetHours() : 0;
-        double progressPercent = targetHours > 0
-                ? (spentSeconds / 3600.0 / targetHours) * 100
-                : 0;
+  @Transactional
+  public UserDto updateWeeklyTarget(Integer targetHours) {
+    String username = SecurityContextHolder.getContext().getAuthentication().getName();
+    User user =
+        userRepository
+            .findByUsername(username)
+            .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+    user.setWeeklyTargetHours(targetHours);
+    user = userRepository.save(user);
+    return mapToDto(user);
+  }
 
-        WeeklyGoalDto dto = new WeeklyGoalDto();
-        dto.setTargetHours(targetHours);
-        dto.setSpentSeconds(spentSeconds);
-        dto.setProgressPercent(progressPercent);
-        dto.setWeekStart(monday.toString());
-        dto.setWeekEnd(sunday.toString());
-        return dto;
-    }
+  private UserDto mapToDto(User user) {
+    UserDto dto = new UserDto();
+    dto.setId(user.getId());
+    dto.setUsername(user.getUsername());
+    dto.setEmail(user.getEmail());
+    dto.setTimezone(user.getTimezone());
+    dto.setWeeklyTargetHours(user.getWeeklyTargetHours());
+    dto.setCreatedAt(user.getCreatedAt());
+    return dto;
+  }
 
-    @Transactional
-    public UserDto updateWeeklyTarget(Integer targetHours) {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
-        user.setWeeklyTargetHours(targetHours);
-        user = userRepository.save(user);
-        return mapToDto(user);
-    }
-
-    private UserDto mapToDto(User user) {
-        UserDto dto = new UserDto();
-        dto.setId(user.getId());
-        dto.setUsername(user.getUsername());
-        dto.setEmail(user.getEmail());
-        dto.setTimezone(user.getTimezone());
-        dto.setWeeklyTargetHours(user.getWeeklyTargetHours());
-        dto.setCreatedAt(user.getCreatedAt());
-        return dto;
-    }
-
-    private Long getCurrentUserId() {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        return userRepository.findByUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"))
-                .getId();
-    }
-
+  private Long getCurrentUserId() {
+    String username = SecurityContextHolder.getContext().getAuthentication().getName();
+    return userRepository
+        .findByUsername(username)
+        .orElseThrow(() -> new ResourceNotFoundException("User not found"))
+        .getId();
+  }
 }

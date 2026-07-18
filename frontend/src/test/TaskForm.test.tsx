@@ -132,7 +132,9 @@ describe('TaskForm', () => {
   });
 
   it('should show error when create fails', async () => {
-    const mutateAsync = vi.fn().mockRejectedValue({ response: { data: { detail: 'Server error' } } });
+    const mutateAsync = vi
+      .fn()
+      .mockRejectedValue({ response: { data: { detail: 'Server error' } } });
 
     vi.spyOn(tasksApi, 'useCreateTask').mockReturnValue({
       mutateAsync,
@@ -184,11 +186,34 @@ describe('TaskForm', () => {
   });
 
   it('should toggle project checkbox', async () => {
-    const mockProjects = [{ id: 1, name: 'P1', description: '', parentId: null, subprojects: [], ownerId: 1, ownerUsername: 'test', members: [], budgetHours: null, spentSeconds: null, createdAt: '' }];
+    const mockProjects = [
+      {
+        id: 1,
+        name: 'P1',
+        description: '',
+        parentId: null,
+        subprojects: [],
+        ownerId: 1,
+        ownerUsername: 'test',
+        members: [],
+        budgetHours: null,
+        spentSeconds: null,
+        createdAt: '',
+      },
+    ];
     vi.spyOn(projectsApi, 'useProjects').mockReturnValue({
-      data: mockProjects, isLoading: false, isPending: false, isError: false, error: null,
-      isSuccess: true, status: 'success', fetchStatus: 'idle', isFetching: false,
-      isInitialLoading: false, refetch: vi.fn(), promise: Promise.resolve(mockProjects),
+      data: mockProjects,
+      isLoading: false,
+      isPending: false,
+      isError: false,
+      error: null,
+      isSuccess: true,
+      status: 'success',
+      fetchStatus: 'idle',
+      isFetching: false,
+      isInitialLoading: false,
+      refetch: vi.fn(),
+      promise: Promise.resolve(mockProjects),
     } as any);
 
     render(<TaskForm />, { wrapper });

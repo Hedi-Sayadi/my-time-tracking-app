@@ -28,7 +28,9 @@ function SettingsPage() {
   const updateTimezone = useUpdateTimezone();
   const updateWeeklyGoal = useUpdateWeeklyGoal();
 
-  const [selectedTz, setSelectedTz] = useState(user?.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone);
+  const [selectedTz, setSelectedTz] = useState(
+    user?.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone
+  );
   const [tzMessage, setTzMessage] = useState('');
   const [goalHours, setGoalHours] = useState(user?.weeklyTargetHours ?? 0);
   const [goalMessage, setGoalMessage] = useState('');
@@ -88,15 +90,23 @@ function SettingsPage() {
           <select
             className="timer-recent-select"
             value={selectedTz}
-            onChange={(e) => handleTimezoneChange(e.target.value)}
+            onChange={e => handleTimezoneChange(e.target.value)}
           >
-            {COMMON_TIMEZONES.map((tz) => (
-              <option key={tz} value={tz}>{tz}</option>
+            {COMMON_TIMEZONES.map(tz => (
+              <option key={tz} value={tz}>
+                {tz}
+              </option>
             ))}
           </select>
         </label>
         {tzMessage && (
-          <p style={{ marginTop: 8, color: tzMessage.includes('saved') ? '#16a34a' : '#dc2626', fontSize: '0.85rem' }}>
+          <p
+            style={{
+              marginTop: 8,
+              color: tzMessage.includes('saved') ? '#16a34a' : '#dc2626',
+              fontSize: '0.85rem',
+            }}
+          >
             {tzMessage}
           </p>
         )}
@@ -115,7 +125,7 @@ function SettingsPage() {
             min={0}
             max={168}
             value={goalHours}
-            onChange={(e) => setGoalHours(Number(e.target.value))}
+            onChange={e => setGoalHours(Number(e.target.value))}
           />
         </label>
         <div className="form-actions" style={{ marginTop: 12 }}>
@@ -124,13 +134,19 @@ function SettingsPage() {
           </button>
         </div>
         {goalMessage && (
-          <p style={{ marginTop: 8, color: goalMessage.includes('saved') ? '#16a34a' : '#dc2626', fontSize: '0.85rem' }}>
+          <p
+            style={{
+              marginTop: 8,
+              color: goalMessage.includes('saved') ? '#16a34a' : '#dc2626',
+              fontSize: '0.85rem',
+            }}
+          >
             {goalMessage}
           </p>
         )}
       </article>
     </section>
-  )
+  );
 }
 
-export default SettingsPage
+export default SettingsPage;

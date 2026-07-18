@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>3.4.0</version>
-		<relativePath/>
+		<relativePath></relativePath>
 	</parent>
 	<groupId>com.hedi.timetracking</groupId>
 	<artifactId>backend</artifactId>
@@ -134,17 +133,17 @@
 					</execution>
 					<execution>
 						<id>report</id>
-						<phase>verify</phase>
 						<goals>
 							<goal>report</goal>
 						</goals>
+						<phase>verify</phase>
 					</execution>
 					<execution>
 						<id>check</id>
-						<phase>verify</phase>
 						<goals>
 							<goal>check</goal>
 						</goals>
+						<phase>verify</phase>
 						<configuration>
 							<rules>
 								<rule>
@@ -159,6 +158,36 @@
 								</rule>
 							</rules>
 						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>com.diffplug.spotless</groupId>
+				<artifactId>spotless-maven-plugin</artifactId>
+				<version>2.43.0</version>
+				<configuration>
+					<java>
+						<googleJavaFormat>
+							<version>1.23.0</version>
+							<style>GOOGLE</style>
+						</googleJavaFormat>
+						<removeUnusedImports></removeUnusedImports>
+						<trimTrailingWhitespace></trimTrailingWhitespace>
+						<endWithNewline></endWithNewline>
+					</java>
+					<pom>
+						<sortPom>
+							<encoding>UTF-8</encoding>
+							<nrOfIndentSpace>-1</nrOfIndentSpace>
+						</sortPom>
+					</pom>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>check</goal>
+						</goals>
+						<phase>verify</phase>
 					</execution>
 				</executions>
 			</plugin>

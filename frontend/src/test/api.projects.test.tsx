@@ -9,13 +9,21 @@ vi.mock('../api/client', () => ({
     get: vi.fn(),
     put: vi.fn(),
     delete: vi.fn(),
-  }
+  },
 }));
 
 import apiClient from '../api/client';
 import {
-  useProjects, useProject, useCreateProject, useUpdateProject, useDeleteProject,
-  useShareProject, useUnshareProject, useProjectMembers, useProjectBudget, useProjectTeam
+  useProjects,
+  useProject,
+  useCreateProject,
+  useUpdateProject,
+  useDeleteProject,
+  useShareProject,
+  useUnshareProject,
+  useProjectMembers,
+  useProjectBudget,
+  useProjectTeam,
 } from '../api/projects';
 
 const queryClient = new QueryClient({
@@ -33,7 +41,21 @@ describe('Projects API hooks', () => {
   });
 
   it('useProjects should get /projects', async () => {
-    const mockData = [{ id: 1, name: 'Test', description: '', parentId: null, subprojects: [], ownerId: 1, ownerUsername: 'test', members: [], budgetHours: null, spentSeconds: null, createdAt: '' }];
+    const mockData = [
+      {
+        id: 1,
+        name: 'Test',
+        description: '',
+        parentId: null,
+        subprojects: [],
+        ownerId: 1,
+        ownerUsername: 'test',
+        members: [],
+        budgetHours: null,
+        spentSeconds: null,
+        createdAt: '',
+      },
+    ];
     vi.mocked(apiClient.get).mockResolvedValueOnce({ data: mockData });
 
     const { result } = renderHook(() => useProjects(), { wrapper });
@@ -43,7 +65,19 @@ describe('Projects API hooks', () => {
   });
 
   it('useProject should get /projects/:id', async () => {
-    const mockData = { id: 1, name: 'Test', description: '', parentId: null, subprojects: [], ownerId: 1, ownerUsername: 'test', members: [], budgetHours: null, spentSeconds: null, createdAt: '' };
+    const mockData = {
+      id: 1,
+      name: 'Test',
+      description: '',
+      parentId: null,
+      subprojects: [],
+      ownerId: 1,
+      ownerUsername: 'test',
+      members: [],
+      budgetHours: null,
+      spentSeconds: null,
+      createdAt: '',
+    };
     vi.mocked(apiClient.get).mockResolvedValueOnce({ data: mockData });
 
     const { result } = renderHook(() => useProject(1), { wrapper });
@@ -52,21 +86,52 @@ describe('Projects API hooks', () => {
   });
 
   it('useCreateProject should post to /projects', async () => {
-    const mockData = { id: 1, name: 'New', description: '', parentId: null, subprojects: [], ownerId: 1, ownerUsername: 'test', members: [], budgetHours: null, spentSeconds: null, createdAt: '' };
+    const mockData = {
+      id: 1,
+      name: 'New',
+      description: '',
+      parentId: null,
+      subprojects: [],
+      ownerId: 1,
+      ownerUsername: 'test',
+      members: [],
+      budgetHours: null,
+      spentSeconds: null,
+      createdAt: '',
+    };
     vi.mocked(apiClient.post).mockResolvedValueOnce({ data: mockData });
 
     const { result } = renderHook(() => useCreateProject(), { wrapper });
     const data = await result.current.mutateAsync({ name: 'New', description: '', parentId: null });
     expect(data).toEqual(mockData);
-    expect(apiClient.post).toHaveBeenCalledWith('/projects', { name: 'New', description: '', parentId: null });
+    expect(apiClient.post).toHaveBeenCalledWith('/projects', {
+      name: 'New',
+      description: '',
+      parentId: null,
+    });
   });
 
   it('useUpdateProject should put to /projects/:id', async () => {
-    const mockData = { id: 1, name: 'Updated', description: '', parentId: null, subprojects: [], ownerId: 1, ownerUsername: 'test', members: [], budgetHours: null, spentSeconds: null, createdAt: '' };
+    const mockData = {
+      id: 1,
+      name: 'Updated',
+      description: '',
+      parentId: null,
+      subprojects: [],
+      ownerId: 1,
+      ownerUsername: 'test',
+      members: [],
+      budgetHours: null,
+      spentSeconds: null,
+      createdAt: '',
+    };
     vi.mocked(apiClient.put).mockResolvedValueOnce({ data: mockData });
 
     const { result } = renderHook(() => useUpdateProject(), { wrapper });
-    const data = await result.current.mutateAsync({ id: 1, data: { name: 'Updated', description: '' } });
+    const data = await result.current.mutateAsync({
+      id: 1,
+      data: { name: 'Updated', description: '' },
+    });
     expect(data).toEqual(mockData);
     expect(apiClient.put).toHaveBeenCalledWith('/projects/1', { name: 'Updated', description: '' });
   });
@@ -116,7 +181,9 @@ describe('Projects API hooks', () => {
   });
 
   it('useProjectTeam should get /projects/:id/team', async () => {
-    const mockData = [{ userId: 1, username: 'test', totalDurationSeconds: 3600, taskCount: 2, joinedAt: '' }];
+    const mockData = [
+      { userId: 1, username: 'test', totalDurationSeconds: 3600, taskCount: 2, joinedAt: '' },
+    ];
     vi.mocked(apiClient.get).mockResolvedValueOnce({ data: mockData });
 
     const { result } = renderHook(() => useProjectTeam(1), { wrapper });

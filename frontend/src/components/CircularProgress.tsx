@@ -28,12 +28,7 @@ const CircularProgress: React.FC<CircularProgressProps> = ({
     <div className={styles.progressRing}>
       <div className={styles.svgWrapper} style={{ width: size, height: size }}>
         <svg width={size} height={size}>
-          <circle
-            className={styles.track}
-            cx={size / 2}
-            cy={size / 2}
-            r={radius}
-          />
+          <circle className={styles.track} cx={size / 2} cy={size / 2} r={radius} />
           <circle
             className={`${styles.indicator} ${colorClass}`}
             cx={size / 2}

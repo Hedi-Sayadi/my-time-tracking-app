@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class TimezoneRequest {
 
-    @NotBlank(message = "Timezone is required")
-    private String timezone;
-
+  @NotBlank(message = "Timezone is required")
+  private String timezone;
 }

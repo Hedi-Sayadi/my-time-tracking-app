@@ -1,9 +1,9 @@
-import { Outlet } from 'react-router-dom'
-import { useAuth } from '../hooks/useAuth'
-import AppSidebar from './AppSidebar'
+import { Outlet } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
+import AppSidebar from './AppSidebar';
 
 function AppLayout() {
-  const { user, logout } = useAuth()
+  const { user, logout } = useAuth();
 
   return (
     <div className="app-shell">
@@ -27,7 +27,7 @@ function AppLayout() {
         </main>
       </div>
     </div>
-  )
+  );
 }
 
-export default AppLayout
+export default AppLayout;

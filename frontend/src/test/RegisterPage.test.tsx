@@ -35,7 +35,9 @@ const useQueryMock = (data: any) => ({
 });
 
 const mutationMock = (overrides: Partial<any> = {}) => ({
-  mutateAsync: vi.fn().mockResolvedValue({ token: 'test-token', user: { id: 1, username: 'tester' } }),
+  mutateAsync: vi
+    .fn()
+    .mockResolvedValue({ token: 'test-token', user: { id: 1, username: 'tester' } }),
   mutate: vi.fn(),
   isPending: false,
   isIdle: true,
@@ -104,7 +106,9 @@ describe('RegisterPage', () => {
   });
 
   it('should show error when registration fails', async () => {
-    const mutateAsync = vi.fn().mockRejectedValue({ response: { data: { detail: 'Username taken' } } });
+    const mutateAsync = vi
+      .fn()
+      .mockRejectedValue({ response: { data: { detail: 'Username taken' } } });
     vi.spyOn(authApi, 'useRegister').mockReturnValue({ ...mutationMock(), mutateAsync } as any);
 
     render(<RegisterPage />, { wrapper });

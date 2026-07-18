@@ -12,16 +12,15 @@ import lombok.*;
 @Builder
 public class TaskProject {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "task_id", nullable = false)
-    private Task task;
+  @ManyToOne(fetch = FetchType.LAZY, optional = false)
+  @JoinColumn(name = "task_id", nullable = false)
+  private Task task;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "project_id", nullable = false)
-    private Project project;
-
+  @ManyToOne(fetch = FetchType.LAZY, optional = false)
+  @JoinColumn(name = "project_id", nullable = false)
+  private Project project;
 }

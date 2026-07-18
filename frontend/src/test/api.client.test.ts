@@ -13,11 +13,20 @@ vi.mock('axios', () => ({
       put: mockPut,
       delete: mockDelete,
       interceptors: {
-        request: { use: vi.fn((fn) => { requestInterceptor = fn; }) },
-        response: { use: vi.fn((success, error) => { responseSuccess = success; responseError = error; }) },
+        request: {
+          use: vi.fn(fn => {
+            requestInterceptor = fn;
+          }),
+        },
+        response: {
+          use: vi.fn((success, error) => {
+            responseSuccess = success;
+            responseError = error;
+          }),
+        },
       },
     })),
-  }
+  },
 }));
 
 let requestInterceptor: any;

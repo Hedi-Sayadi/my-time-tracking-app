@@ -26,7 +26,14 @@ function TasksPage() {
       </header>
 
       <div className="page-actions">
-        <button type="button" className="primary-button" onClick={() => { setEditingTask(null); setShowForm(true); }}>
+        <button
+          type="button"
+          className="primary-button"
+          onClick={() => {
+            setEditingTask(null);
+            setShowForm(true);
+          }}
+        >
           Add manual entry
         </button>
       </div>
@@ -36,8 +43,14 @@ function TasksPage() {
           <h2>{editingTask ? 'Edit task' : 'New task'}</h2>
           <TaskForm
             initialData={editingTask ?? undefined}
-            onSuccess={() => { setShowForm(false); setEditingTask(null); }}
-            onCancel={() => { setShowForm(false); setEditingTask(null); }}
+            onSuccess={() => {
+              setShowForm(false);
+              setEditingTask(null);
+            }}
+            onCancel={() => {
+              setShowForm(false);
+              setEditingTask(null);
+            }}
           />
         </article>
       )}
@@ -49,20 +62,17 @@ function TasksPage() {
         ) : (
           <div className="task-list">
             {tasks?.length === 0 && <p>No tasks yet.</p>}
-            {tasks?.map((task) => (
+            {tasks?.map(task => (
               <article className="task-row" key={task.id}>
                 <div>
                   <strong>{task.description}</strong>
                   <p>
                     {formatTime(task.startTime, user?.timezone)}
-                    {task.endTime && ` → ${formatTime(task.endTime, user?.timezone)}`}
-                    {' '}
-                    ({formatDuration(task.durationSeconds)})
+                    {task.endTime && ` → ${formatTime(task.endTime, user?.timezone)}`} (
+                    {formatDuration(task.durationSeconds)})
                   </p>
                   {task.projects.length > 0 && (
-                    <p className="project-tags">
-                      {task.projects.map((p) => p.name).join(', ')}
-                    </p>
+                    <p className="project-tags">{task.projects.map(p => p.name).join(', ')}</p>
                   )}
                 </div>
                 {task.userId === user?.id && (
@@ -70,14 +80,19 @@ function TasksPage() {
                     <button
                       type="button"
                       className="secondary-button small"
-                      onClick={() => { setEditingTask(task); setShowForm(true); }}
+                      onClick={() => {
+                        setEditingTask(task);
+                        setShowForm(true);
+                      }}
                     >
                       Edit
                     </button>
                     <button
                       type="button"
                       className="danger-button small"
-                      onClick={() => { if (confirm('Delete this task?')) deleteTask.mutate(task.id); }}
+                      onClick={() => {
+                        if (confirm('Delete this task?')) deleteTask.mutate(task.id);
+                      }}
                       disabled={deleteTask.isPending}
                     >
                       Delete

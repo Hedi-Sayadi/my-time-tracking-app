@@ -9,15 +9,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ProjectRequest {
 
-    @NotBlank
-    @Size(max = 100)
-    private String name;
+  @NotBlank
+  @Size(max = 100)
+  private String name;
 
-    @Size(max = 1000)
-    private String description;
+  @Size(max = 1000)
+  private String description;
 
-    private Long parentId;
+  private Long parentId;
 
-    private Integer budgetHours;
-
+  private Integer budgetHours;
 }

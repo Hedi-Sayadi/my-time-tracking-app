@@ -29,7 +29,9 @@ function TestComponent() {
   const auth = useAuth();
   return (
     <div>
-      <span data-testid="auth-state">{auth.isAuthenticated ? 'authenticated' : 'unauthenticated'}</span>
+      <span data-testid="auth-state">
+        {auth.isAuthenticated ? 'authenticated' : 'unauthenticated'}
+      </span>
       <button onClick={() => auth.login('test-token')}>Login</button>
       <button onClick={() => auth.logout()}>Logout</button>
     </div>
@@ -43,22 +45,22 @@ describe('AuthProvider', () => {
 
   it('should be unauthenticated by default', () => {
     render(<TestComponent />, { wrapper });
-    
+
     expect(screen.getByTestId('auth-state')).toHaveTextContent('unauthenticated');
   });
 
   it('should be authenticated when token is in localStorage', () => {
     localStorage.setItem('token', 'existing-token');
     render(<TestComponent />, { wrapper });
-    
+
     expect(screen.getByTestId('auth-state')).toHaveTextContent('authenticated');
   });
 
   it('should login and store token', () => {
     render(<TestComponent />, { wrapper });
-    
+
     fireEvent.click(screen.getByRole('button', { name: /login/i }));
-    
+
     expect(localStorage.getItem('token')).toBe('test-token');
     expect(screen.getByTestId('auth-state')).toHaveTextContent('authenticated');
   });
@@ -66,9 +68,9 @@ describe('AuthProvider', () => {
   it('should logout and remove token', () => {
     localStorage.setItem('token', 'test-token');
     render(<TestComponent />, { wrapper });
-    
+
     fireEvent.click(screen.getByRole('button', { name: /logout/i }));
-    
+
     expect(localStorage.getItem('token')).toBeNull();
   });
 });

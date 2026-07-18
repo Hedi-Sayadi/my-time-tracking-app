@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class WeeklyGoalRequest {
 
-    @Min(0)
-    private Integer targetHours;
-
+  @Min(0)
+  private Integer targetHours;
 }
