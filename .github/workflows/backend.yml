@@ -39,8 +39,10 @@ jobs:
       # Run only unit tests that don't require Docker (Testcontainers).
       # Integration tests (AuthControllerIntegrationTest, ProjectControllerIntegrationTest,
       # TaskControllerIntegrationTest, BackendApplicationTests) are skipped on this runner
-      # because Docker is not yet available on the self-hosted CI machine.
-      # They run successfully locally with Docker Desktop.
+      # because the Docker daemon on the self-hosted CI machine requires API version 1.40+,
+      # while the docker-java client bundled with Testcontainers defaults to API 1.32.
+      # We verified Docker IS installed on the runner, but the version mismatch prevents connection.
+      # Integration tests run successfully locally with Docker Desktop.
       - name: Run unit tests
         run: ./mvnw test --no-transfer-progress -B -Dtest=com.hedi.timetracking.backend.model.TaskTest,com.hedi.timetracking.backend.security.JwtUtilTest,com.hedi.timetracking.backend.service.TaskServiceTest
 

@@ -84,7 +84,7 @@ The AI often tries to solve data aggregation problems with database queries, eve
 
 ### CI Pipeline Assumptions
 
-The AI set up GitHub Actions assuming the self-hosted runner had Docker installed, because we use Testcontainers for integration tests. The pipeline failed repeatedly. The AI kept trying to fix the YAML syntax or add caching, but the real problem was simpler: the university runner does not have Docker. I had to tell it to skip the integration tests in CI and only run the unit tests. The AI struggles with environmental constraints that are not in the code.
+The AI set up GitHub Actions assuming the self-hosted runner had Docker installed, because we use Testcontainers for integration tests. The pipeline failed repeatedly. At first we thought the university runner did not have Docker at all, so we disabled the integration tests in CI and only ran unit tests. Later, we discovered that Docker IS installed on the runner, but the Docker daemon requires API version 1.40 or higher. The Testcontainers library we use (via Spring Boot 3.4.0) bundles an older docker-java client that defaults to API 1.32. This version mismatch causes the connection to fail. We tried upgrading the Testcontainers version, forcing a newer docker-java dependency, and setting environment variables, but none of these fixes worked in the time we had. So we kept the workaround: integration tests run locally with Docker Desktop, while CI only runs the unit tests. The lesson here is that the AI struggles with infrastructure-level version conflicts that are not visible in the application code.
 
 ### Visual Validation
 
