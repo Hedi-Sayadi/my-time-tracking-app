@@ -84,7 +84,11 @@ The AI often tries to solve data aggregation problems with database queries, eve
 
 ### CI Pipeline Assumptions
 
-The AI set up GitHub Actions assuming the self-hosted runner had Docker installed, because we use Testcontainers for integration tests. The pipeline failed repeatedly. The AI kept trying to fix the YAML syntax or add caching, but the real problem was simpler: the university runner does not have Docker. I had to tell it to skip the integration tests in CI and only run the unit tests. The AI struggles with environmental constraints that are not in the code.
+My CI pipeline kept failing on the integration tests that use Testcontainers. The AI immediately assumed the self-hosted runner did not have Docker installed, and started suggesting fixes like tweaking the YAML syntax or bumping dependency versions. None of that worked.
+
+I decided to check manually, so I added a step to print the Docker version in the pipeline. Docker was actually there. I shared the logs with the AI and asked it to dig deeper, but I could not pinpoint the exact issue myself either. The AI kept going in circles with dependency updates.
+
+Then I remembered the professor's advice to Docker-ize as much of the pipeline as possible. I told the AI to follow that direction instead. The fix ended up being simple: start PostgreSQL via the Docker CLI in the workflow, disable the Testcontainers bean for CI, and point the tests at the external database. The AI would never have arrived at this on its own because it was too focused on fixing the code rather than rethinking the infrastructure setup.
 
 ### Visual Validation
 
