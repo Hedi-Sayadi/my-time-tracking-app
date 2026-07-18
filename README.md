@@ -10,7 +10,7 @@ For local development without Docker you also need Java 21, Node.js 24+, Maven, 
 
 ## Quick Start (Docker Compose)
 
-The easiest way to run everything — database, backend, frontend, and pgAdmin — with one command:
+The easiest way to run everything - database, backend, frontend, and pgAdmin - with one command:
 
 ```bash
 git clone <repo-url>
@@ -24,6 +24,23 @@ Then open:
 - **pgAdmin:** http://localhost:5050 (login: `admin@timetracking.local` / `admin`)
 
 > No `.env` file is needed for Docker Compose. JWT secrets and database credentials are already configured inside `docker-compose.yml` with sensible defaults.
+
+### Demo Login & Pre-loaded Data
+
+After `docker compose up` finishes, the database is automatically seeded with realistic demo data. You can log in immediately:
+
+| Field | Value |
+|-------|-------|
+| Username | `sayadihedi145` |
+| Password | `password123` |
+
+Once logged in you will see:
+- **10 projects** with time budgets (e.g., Final Project has an 80-hour budget)
+- **Tasks** already logged for today and earlier this week
+- **Weekly Goals** ring on the dashboard (target: 40 hours/week)
+- **Project Sharing** - some projects are shared with a second demo user so the Team Dashboard tab is populated
+
+> The backend may take ~30 seconds to start on first run because it builds the Docker image and executes the seed script. The frontend will be available once the backend health check passes.
 
 ### Docker Services
 
@@ -105,27 +122,27 @@ npm run build
 ## API Overview
 
 ### Authentication
-- `POST /api/auth/register` — Create new account
-- `POST /api/auth/login` — Authenticate and receive JWT
-- `GET /api/auth/me` — Get current user info
-- `PUT /api/auth/password` — Change password
+- `POST /api/auth/register` - Create new account
+- `POST /api/auth/login` - Authenticate and receive JWT
+- `GET /api/auth/me` - Get current user info
+- `PUT /api/auth/password` - Change password
 
 ### Projects
-- `GET /api/projects` — List all projects with subprojects
-- `POST /api/projects` — Create project (optionally with parent)
-- `PUT /api/projects/{id}` — Update project
-- `DELETE /api/projects/{id}` — Delete project
+- `GET /api/projects` - List all projects with subprojects
+- `POST /api/projects` - Create project (optionally with parent)
+- `PUT /api/projects/{id}` - Update project
+- `DELETE /api/projects/{id}` - Delete project
 
 ### Tasks / Time Tracking
-- `GET /api/tasks` — List all tasks
-- `POST /api/tasks/start` — Start a new timer
-- `POST /api/tasks/{id}/stop` — Stop running timer
-- `GET /api/tasks/active` — Get currently running task
-- `POST /api/tasks` — Create manual entry
-- `PUT /api/tasks/{id}` — Edit task (including times)
-- `DELETE /api/tasks/{id}` — Delete task
-- `GET /api/tasks/overview?period=today|week|month` — Time overview
-- `GET /api/tasks/projects/{id}/time` — Total time for project
+- `GET /api/tasks` - List all tasks
+- `POST /api/tasks/start` - Start a new timer
+- `POST /api/tasks/{id}/stop` - Stop running timer
+- `GET /api/tasks/active` - Get currently running task
+- `POST /api/tasks` - Create manual entry
+- `PUT /api/tasks/{id}` - Edit task (including times)
+- `DELETE /api/tasks/{id}` - Delete task
+- `GET /api/tasks/overview?period=today|week|month` - Time overview
+- `GET /api/tasks/projects/{id}/time` - Total time for project
 
 ## Testing
 
