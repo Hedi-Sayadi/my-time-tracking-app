@@ -36,13 +36,6 @@ jobs:
       - name: Compile
         run: ./mvnw compile --no-transfer-progress -B
 
-      # Dockerize the test database: start PostgreSQL via the Docker CLI.
-      # The docker-java library bundled with Testcontainers hardcodes API
-      # version 1.32, which the self-hosted runner's Docker daemon rejects
-      # (it requires 1.40+). Using the Docker CLI avoids this because the
-      # CLI negotiates the API version automatically. We then point the
-      # tests at this external PostgreSQL instead of spinning one up through
-      # Testcontainers.
       - name: Start PostgreSQL container
         working-directory: .
         run: |
