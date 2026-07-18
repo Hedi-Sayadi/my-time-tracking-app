@@ -2,7 +2,7 @@ name: Backend CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, ci/dockerize-pipeline]
     paths:
       - 'backend/**'
       - '.github/workflows/backend.yml'
@@ -36,17 +36,53 @@ jobs:
       - name: Compile
         run: ./mvnw compile --no-transfer-progress -B
 
-      # Run only unit tests that don't require Docker (Testcontainers).
-      # Integration tests (AuthControllerIntegrationTest, ProjectControllerIntegrationTest,
-      # TaskControllerIntegrationTest, BackendApplicationTests) are skipped on this runner
-      # because the Docker daemon on the self-hosted CI machine requires API version 1.40+,
-      # while the docker-java client bundled with Testcontainers defaults to API 1.32.
-      # We verified Docker IS installed on the runner, but the version mismatch prevents connection.
-      # GitHub-hosted runners (ubuntu-latest) are not an option because the university organization
-      # has exceeded its GitHub Actions minutes budget (billing error blocks hosted runners).
-      # Integration tests run successfully locally with Docker Desktop.
-      - name: Run unit tests
-        run: ./mvnw test --no-transfer-progress -B -Dtest=com.hedi.timetracking.backend.model.TaskTest,com.hedi.timetracking.backend.security.JwtUtilTest,com.hedi.timetracking.backend.service.TaskServiceTest
+      # Dockerize the test database: start PostgreSQL via the Docker CLI.
+      # The docker-java library bundled with Testcontainers hardcodes API
+      # version 1.32, which the self-hosted runner's Docker daemon rejects
+      # (it requires 1.40+). Using the Docker CLI avoids this because the
+      # CLI negotiates the API version automatically. We then point the
+      # tests at this external PostgreSQL instead of spinning one up through
+      # Testcontainers.
+      - name: Start PostgreSQL container
+        working-directory: .
+        run: |
+          docker run -d --name ci-postgres \
+            -e POSTGRES_DB=timetracking \
+            -e POSTGRES_USER=timetracking \
+            -e POSTGRES_PASSWORD=timetracking \
+            -p 5432:5432 \
+            postgres:16
+
+      - name: Wait for PostgreSQL
+        working-directory: .
+        run: |
+          echo "Waiting for PostgreSQL to accept connections..."
+          for i in $(seq 1 30); do
+            if docker exec ci-postgres pg_isready -U timetracking -d timetracking > /dev/null 2>&1; then
+              echo "PostgreSQL is ready (attempt $i)"
+              exit 0
+            fi
+            echo "Attempt $i: not ready yet, retrying in 2s..."
+            sleep 2
+          done
+          echo "PostgreSQL did not become ready in time"
+          docker logs ci-postgres
+          exit 1
+
+      - name: Run all tests
+        env:
+          TESTCONTAINERS_ENABLED: "false"
+          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/timetracking
+          SPRING_DATASOURCE_USERNAME: timetracking
+          SPRING_DATASOURCE_PASSWORD: timetracking
+        run: ./mvnw test --no-transfer-progress -B
+
+      - name: Stop PostgreSQL container
+        if: always()
+        working-directory: .
+        run: |
+          docker stop ci-postgres || true
+          docker rm ci-postgres || true
 
       - name: Upload coverage
         uses: actions/upload-artifact@v4
