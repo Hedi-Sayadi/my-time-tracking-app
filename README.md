@@ -4,29 +4,26 @@ A full-stack time tracking web application for individuals (students, freelancer
 
 ## Prerequisites
 
-- **Java JDK 21** (or 25)
-- **Node.js 24+** (LTS)
-- **Maven** (or use the included `./mvnw` wrapper)
-- **Docker & Docker Compose** (for containerized deployment)
-- **PostgreSQL 16** (if running locally without Docker)
+- **Docker & Docker Compose** (only requirement for the Docker path)
+
+For local development without Docker you also need Java 21, Node.js 24+, Maven, and PostgreSQL 16.
 
 ## Quick Start (Docker Compose)
 
-The fastest way to run the entire application with database and admin UI:
+The easiest way to run everything — database, backend, frontend, and pgAdmin — with one command:
 
 ```bash
-# Clone the repository
 git clone <repo-url>
 cd final-project-Hedi-Sayadi
-
-# Start all services
 docker compose up --build
-
-# Access the applications:
-# Frontend:     http://localhost:3000
-# Backend API:  http://localhost:8080/api
-# pgAdmin:      http://localhost:5050 (admin@timetracking.local / admin)
 ```
+
+Then open:
+- **Frontend:** http://localhost:3000
+- **Backend API:** http://localhost:8080/api
+- **pgAdmin:** http://localhost:5050 (login: `admin@timetracking.local` / `admin`)
+
+> No `.env` file is needed for Docker Compose. JWT secrets and database credentials are already configured inside `docker-compose.yml` with sensible defaults.
 
 ### Docker Services
 
@@ -36,15 +33,6 @@ docker compose up --build
 | `pgadmin` | 5050 | pgAdmin database management UI |
 | `backend` | 8080 | Spring Boot REST API |
 | `frontend` | 3000 | React SPA (nginx) |
-
-### Environment Variables
-
-Copy `.env.example` to `.env` and adjust as needed:
-
-```bash
-JWT_SECRET=your-secret-key-here-min-32-chars-long
-JWT_EXPIRATION_MS=86400000
-```
 
 ## Development Setup
 
@@ -56,12 +44,17 @@ cd backend
 # Run tests
 ./mvnw test
 
-# Run with coverage (enforces 90% line coverage)
+# Run with coverage report (generates report but does not enforce threshold)
+./mvnw test jacoco:report
+
+# Run with coverage enforcement (requires ~45% line coverage to pass)
 ./mvnw verify
 
-# Start locally (requires PostgreSQL on localhost:5432)
+# Start locally (requires PostgreSQL on localhost:5432 and a .env file)
 ./mvnw spring-boot:run -Dspring-boot.run.profiles=dev
 ```
+
+When running locally without Docker, copy `.env.example` to `.env` in the project root and set your `JWT_SECRET`.
 
 ### Frontend
 
@@ -94,7 +87,7 @@ npm run build
 - **Spring Security** with JWT authentication
 - **Spring Data JPA** with PostgreSQL
 - **Testcontainers** for integration testing
-- **JaCoCo** for coverage (90% line minimum)
+- **JaCoCo** for coverage reporting
 
 ### Frontend
 - **React 19** with TypeScript
@@ -139,15 +132,16 @@ npm run build
 ### Backend Tests
 ```bash
 cd backend
-./mvnw test              # Unit tests
-./mvnw verify            # Integration tests + coverage
+./mvnw test              # Run all tests (unit + integration)
+./mvnw test jacoco:report # Generate coverage report
+./mvnw verify            # Run tests + enforce coverage threshold (~45%)
 ```
 
 ### Frontend Tests
 ```bash
 cd frontend
-npm run test             # Unit tests (Vitest)
-npm run test:coverage    # With coverage report
+npm run test             # Run unit tests (Vitest)
+npm run test:coverage    # Run tests with coverage report
 ```
 
 ## Project Structure
