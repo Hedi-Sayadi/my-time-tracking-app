@@ -11,6 +11,7 @@ RUN ./mvnw package -Dmaven.test.skip=true -B && \
 
 # Production stage
 FROM eclipse-temurin:21-jre-alpine
+RUN apk add --no-cache wget
 WORKDIR /app
 COPY --from=builder /app/target/dependency/ .
 
