@@ -1,7 +1,5 @@
 # TodoFlow Application — Setup & Launch Instructions
 
-> **Note:** This README is hosted in the Time Tracking repository because the Todo App repository (`se2p-classrooms/todo-application-Hedi-Sayadi`) is currently read-only. All setup and launch instructions for the Todo App are provided below.
-
 ## Prerequisites
 
 - **Docker & Docker Compose** (only requirement for the Docker path)
