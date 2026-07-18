@@ -36,7 +36,7 @@ After `docker compose up` finishes, the database is automatically seeded with re
 
 Once logged in you will see:
 - **10 projects** with time budgets (e.g., Final Project has an 80-hour budget)
-- **Tasks** already logged for today and earlier this week
+- **Tasks** already logged for earlier this week
 - **Weekly Goals** ring on the dashboard (target: 40 hours/week)
 - **Project Sharing** - some projects are shared with a second demo user so the Team Dashboard tab is populated
 
