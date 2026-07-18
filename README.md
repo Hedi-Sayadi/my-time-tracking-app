@@ -126,12 +126,20 @@ npm run build
 - `POST /api/auth/login` - Authenticate and receive JWT
 - `GET /api/auth/me` - Get current user info
 - `PUT /api/auth/password` - Change password
+- `PUT /api/auth/timezone` - Update preferred time zone
+- `GET /api/auth/me/goal` - Get weekly goal progress
+- `PUT /api/auth/me/goal` - Set weekly target hours
 
 ### Projects
 - `GET /api/projects` - List all projects with subprojects
 - `POST /api/projects` - Create project (optionally with parent)
 - `PUT /api/projects/{id}` - Update project
 - `DELETE /api/projects/{id}` - Delete project
+- `POST /api/projects/{id}/share` - Share project with a user
+- `DELETE /api/projects/{id}/share/{userId}` - Remove user from project
+- `GET /api/projects/{id}/members` - List project members
+- `GET /api/projects/{id}/budget` - Get budget vs spent time
+- `GET /api/projects/{id}/team` - Get team contributions
 
 ### Tasks / Time Tracking
 - `GET /api/tasks` - List all tasks
@@ -143,6 +151,8 @@ npm run build
 - `DELETE /api/tasks/{id}` - Delete task
 - `GET /api/tasks/overview?period=today|week|month` - Time overview
 - `GET /api/tasks/projects/{id}/time` - Total time for project
+- `GET /api/tasks/projects/{id}/tasks` - List tasks for a project
+- `GET /api/tasks/projects/{id}/export` - Export tasks as CSV
 
 ## Testing
 
