@@ -66,7 +66,7 @@ cd backend
 # Run with coverage report
 ./mvnw test jacoco:report
 
-# Run tests + generate coverage report
+# Run tests + enforce coverage threshold (90%)
 ./mvnw verify
 
 # Start locally (requires PostgreSQL on localhost:5432 and a .env file)
@@ -169,10 +169,13 @@ npm run build
 cd backend
 ./mvnw test              # Run all tests (unit + integration)
 ./mvnw test jacoco:report # Generate coverage report
-./mvnw verify            # Run tests + generate coverage report
+./mvnw verify            # Run tests + enforce JaCoCo threshold (90%)
 ```
 
 Backend tests include unit tests (service layer, security filters, exception handling) and integration tests (controllers with Testcontainers). They run together in CI.
+
+**Backend coverage:**
+- **Lines:** 99%
 
 ### Frontend Tests
 ```bash
