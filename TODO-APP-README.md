@@ -99,7 +99,6 @@ npm run build
 - **Java 17** with Spring Boot 4.0.6
 - **Spring Security** with JWT authentication
 - **Spring Data JPA** with PostgreSQL
-- **SendGrid SMTP** for email reminders
 - **Lombok** for boilerplate reduction
 - **Checkstyle** for code style enforcement
 
@@ -136,11 +135,6 @@ npm run build
 - `GET /api/categories` - List categories
 - `POST /api/categories` - Create category
 - `DELETE /api/categories/{id}` - Delete category
-
-### Reminders
-- `POST /api/reminders` - Schedule reminder
-- `DELETE /api/reminders/{id}` - Cancel reminder
-- `POST /api/reminders/{id}/send` - Send email immediately
 
 ### Health
 - `GET /api/health` - Backend health status
