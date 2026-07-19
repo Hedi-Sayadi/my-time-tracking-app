@@ -23,7 +23,7 @@ docker compose up --build
 Then open:
 - **Frontend:** http://localhost:3000
 - **Backend API:** http://localhost:8080/api
-- **pgAdmin:** http://localhost:5050 (login: `admin@timetracking.local` / `admin`)
+- **pgAdmin:** http://localhost:5050 (login: `admin@timetracking.local` / `admin`) — [see setup steps below](#pgadmin-setup)
 
 > No `.env` file is needed for Docker Compose. JWT secrets and database credentials are already configured inside `docker-compose.yml` with sensible defaults.
 
@@ -52,6 +52,24 @@ Once logged in you will see:
 | `pgadmin` | 5050 | pgAdmin database management UI |
 | `backend` | 8080 | Spring Boot REST API |
 | `frontend` | 3000 | React SPA (nginx) |
+
+### pgAdmin Setup
+
+After opening http://localhost:5050 and logging in with `admin@timetracking.local` / `admin`:
+
+1. Click **"Add New Server"** (or right-click "Servers" → "Register" → "Server...")
+2. In the **General** tab, enter any name (e.g., `timetracking`)
+3. Switch to the **Connection** tab and fill in:
+   | Field | Value |
+   |-------|-------|
+   | Host name/address | `postgres` |
+   | Port | `5432` |
+   | Maintenance database | `timetracking` |
+   | Username | `timetracking` |
+   | Password | `timetracking` |
+4. Click **Save**
+
+You can now browse the database schema, run SQL queries, and inspect the demo data.
 
 ## Development Setup
 
