@@ -9,6 +9,8 @@ SELECT 6, 'sayadihedi145', 'sayadihedi145@gmail.com',
        'Europe/Berlin', 40, NOW(), NOW()
 WHERE NOT EXISTS (SELECT 1 FROM users WHERE id = 6 OR username = 'sayadihedi145' OR email = 'sayadihedi145@gmail.com');
 
+SELECT setval('users_id_seq', (SELECT MAX(id) FROM users));
+
 -- 2. Time Budgets: projects with hour budgets
 INSERT INTO projects (id, name, description, parent_id, user_id, budget_hours, created_at)
 SELECT * FROM (VALUES
@@ -33,6 +35,8 @@ SELECT 7, 'demoteammate', 'demo@timetracking.local',
        '$2b$10$K2JoU7eaWX6ds3mI89M6KOpza3i2hQSpih1Ri9fMI2FIFoYl1FJ7m',
        'Europe/Berlin', 20, NOW(), NOW()
 WHERE NOT EXISTS (SELECT 1 FROM users WHERE id = 7 OR username = 'demoteammate' OR email = 'demo@timetracking.local');
+
+SELECT setval('users_id_seq', (SELECT MAX(id) FROM users));
 
 -- Share some projects with the teammate
 INSERT INTO project_members (project_id, user_id, created_at)
