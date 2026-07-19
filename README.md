@@ -193,6 +193,8 @@ Frontend test coverage exceeds all thresholds:
 ### E2E Tests
 ```bash
 cd frontend
+npm install              # Install dependencies
+npx playwright install   # Download browser binaries (first time only)
 npx playwright test      # Run Playwright end-to-end tests
 ```
 
