@@ -1,8 +1,16 @@
-import { createContext, useContext, useState, useCallback, type ReactNode } from 'react';
+import {
+  createContext,
+  useContext,
+  useState,
+  useCallback,
+  useEffect,
+  type ReactNode,
+} from 'react';
 import { useCurrentUser, type User } from '../api/auth';
 
 interface AuthContextType {
   isAuthenticated: boolean;
+  isLoading: boolean;
   user: User | null;
   login: (token: string) => void;
   logout: () => void;
@@ -12,7 +20,7 @@ const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
-  const { data: user } = useCurrentUser();
+  const { data: user, error, isLoading } = useCurrentUser();
 
   const login = useCallback((newToken: string) => {
     localStorage.setItem('token', newToken);
@@ -25,8 +33,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     window.location.href = '/login';
   }, []);
 
+  useEffect(() => {
+    if (error && token) {
+      logout();
+    }
+  }, [error, token, logout]);
+
   const value: AuthContextType = {
-    isAuthenticated: !!token,
+    isAuthenticated: !!token && !error,
+    isLoading,
     user: user ?? null,
     login,
     logout,
