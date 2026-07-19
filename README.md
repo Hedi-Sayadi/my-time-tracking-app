@@ -66,7 +66,7 @@ cd backend
 # Run with coverage report
 ./mvnw test jacoco:report
 
-# Run tests with coverage enforcement (JaCoCo threshold is 90%)
+# Run tests + generate coverage report
 ./mvnw verify
 
 # Start locally (requires PostgreSQL on localhost:5432 and a .env file)
