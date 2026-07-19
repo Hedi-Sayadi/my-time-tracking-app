@@ -169,7 +169,7 @@ npm run build
 cd backend
 ./mvnw test              # Run all tests (unit + integration)
 ./mvnw test jacoco:report # Generate coverage report
-./mvnw verify            # Run tests + enforce JaCoCo threshold (90%)
+./mvnw verify            # Run tests + generate coverage report
 ```
 
 Backend tests include unit tests (service layer, security filters, exception handling) and integration tests (controllers with Testcontainers). They run together in CI.
