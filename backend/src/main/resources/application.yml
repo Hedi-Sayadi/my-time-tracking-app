@@ -22,7 +22,7 @@ spring:
     password: ${DATABASE_PASSWORD:${DB_PASSWORD:timetracking}}
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     show-sql: true
     defer-datasource-initialization: true
     properties:
