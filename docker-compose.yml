@@ -68,7 +68,7 @@ services:
     container_name: timetracking-frontend
     restart: unless-stopped
     environment:
-      VITE_API_URL: http://backend:8080/api
+      VITE_API_URL: /api
     ports:
       - "3000:80"
     depends_on:
