@@ -13,7 +13,7 @@
 	<name>Time Tracking Backend</name>
 	<description>Backend for the Time Tracking web application</description>
 	<properties>
-		<java.version>21</java.version>
+		<java.version>17</java.version>
 		<jjwt.version>0.12.6</jjwt.version>
 	</properties>
 	<dependencies>
