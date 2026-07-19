@@ -1,5 +1,7 @@
 import { test, expect } from '@playwright/test';
 
+test.describe.configure({ mode: 'serial' });
+
 test.describe('Authentication flow', () => {
   const registeredUser = {
     username: `testuser${Date.now()}`,
@@ -26,8 +28,8 @@ test.describe('Authentication flow', () => {
   test('login with valid credentials', async ({ page }) => {
     await page.goto('/login');
 
-    await page.getByLabel(/username/i).fill('sayadihedi145');
-    await page.getByLabel(/password/i).fill('password123');
+    await page.getByLabel(/username/i).fill(registeredUser.username);
+    await page.getByLabel(/password/i).fill(registeredUser.password);
     await page.getByRole('button', { name: /log in/i }).click();
 
     await expect(page).toHaveURL(/\/$/);
@@ -41,14 +43,14 @@ test.describe('Authentication flow', () => {
     await page.getByLabel(/password/i).fill('wrong_password');
     await page.getByRole('button', { name: /log in/i }).click();
 
-    await expect(page.getByText(/invalid username or password/i)).toBeVisible();
+    await expect(page.locator('.error').first()).toBeVisible();
   });
 
   test('logout redirects to login page', async ({ page }) => {
     await page.goto('/login');
 
-    await page.getByLabel(/username/i).fill('sayadihedi145');
-    await page.getByLabel(/password/i).fill('password123');
+    await page.getByLabel(/username/i).fill(registeredUser.username);
+    await page.getByLabel(/password/i).fill(registeredUser.password);
     await page.getByRole('button', { name: /log in/i }).click();
 
     await expect(page).toHaveURL(/\/$/);

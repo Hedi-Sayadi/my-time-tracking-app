@@ -30,7 +30,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = useCallback(() => {
     localStorage.removeItem('token');
     setToken(null);
-    window.location.href = '/login';
+    if (!window.location.pathname.startsWith('/login')) {
+      window.location.href = '/login';
+    }
   }, []);
 
   useEffect(() => {
