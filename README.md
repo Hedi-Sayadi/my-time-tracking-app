@@ -55,11 +55,13 @@ Once logged in you will see:
 
 ### pgAdmin Setup
 
-After opening http://localhost:5050 and logging in with `admin@timetracking.local` / `admin`:
+After opening http://localhost:5050:
 
-1. Click **"Add New Server"** (or right-click "Servers" → "Register" → "Server...")
-2. In the **General** tab, enter any name (e.g., `timetracking`)
-3. Switch to the **Connection** tab and fill in:
+1. **Login** — use `admin@timetracking.local` / `admin` (first time only, then session is saved)
+2. **Master Password** — if a dialog asks for "Master Password", leave it empty and click **OK** (or enter any password you want)
+3. Click **"Add New Server"** (or right-click "Servers" → "Register" → "Server...")
+4. In the **General** tab, enter any name (e.g., `timetracking`)
+5. Switch to the **Connection** tab and fill in:
    | Field | Value |
    |-------|-------|
    | Host name/address | `postgres` |
@@ -67,7 +69,7 @@ After opening http://localhost:5050 and logging in with `admin@timetracking.loca
    | Maintenance database | `timetracking` |
    | Username | `timetracking` |
    | Password | `timetracking` |
-4. Click **Save**
+6. Click **Save**
 
 You can now browse the database schema, run SQL queries, and inspect the demo data.
 
