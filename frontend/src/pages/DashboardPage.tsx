@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import MetricCard from '../components/MetricCard';
 import RecentTasks from '../components/RecentTasks';
 import TimerCard from '../components/TimerCard';
@@ -15,6 +16,7 @@ function formatDuration(totalSeconds: number): string {
 }
 
 function DashboardPage() {
+  const navigate = useNavigate();
   const { data: overview } = useTaskOverview('today');
   const { data: projects } = useProjects();
   const { data: activeTask } = useActiveTask();
@@ -60,7 +62,11 @@ function DashboardPage() {
           </h1>
         </div>
 
-        <button type="button" className="secondary-button">
+        <button
+          type="button"
+          className="secondary-button"
+          onClick={() => navigate('/reports')}
+        >
           Open overview
         </button>
       </header>
