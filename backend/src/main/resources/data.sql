@@ -5,7 +5,7 @@
 -- 1. Create the main demo user if not present (so the professor can log in immediately)
 INSERT INTO users (id, username, email, password_hash, timezone, weekly_target_hours, created_at, updated_at)
 SELECT 6, 'sayadihedi145', 'sayadihedi145@gmail.com',
-       '$2a$10$CWRIMI85RsKIBKJKP0J/v.Yc1i9mEB2Wp1cF3nCKYyY9eT7uiV2qW',
+       '$2b$10$hFgVmrxiyJrugzA26OQybuzwGThAiXDe6JFdDx205fqycyGxg4nqS',
        'Europe/Berlin', 40, NOW(), NOW()
 WHERE NOT EXISTS (SELECT 1 FROM users WHERE id = 6 OR username = 'sayadihedi145' OR email = 'sayadihedi145@gmail.com');
 
@@ -30,7 +30,7 @@ SELECT setval('projects_id_seq', (SELECT MAX(id) FROM projects));
 -- 3. Team Dashboard / Project Sharing: add a second demo teammate
 INSERT INTO users (id, username, email, password_hash, timezone, weekly_target_hours, created_at, updated_at)
 SELECT 7, 'demoteammate', 'demo@timetracking.local',
-       '$2a$10$CWRIMI85RsKIBKJKP0J/v.Yc1i9mEB2Wp1cF3nCKYyY9eT7uiV2qW',
+       '$2b$10$K2JoU7eaWX6ds3mI89M6KOpza3i2hQSpih1Ri9fMI2FIFoYl1FJ7m',
        'Europe/Berlin', 20, NOW(), NOW()
 WHERE NOT EXISTS (SELECT 1 FROM users WHERE id = 7 OR username = 'demoteammate' OR email = 'demo@timetracking.local');
 
