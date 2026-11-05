@@ -2,7 +2,7 @@
 
 A full-stack time tracking web application for individuals (students, freelancers, researchers) to track time spent on lectures, seminars, projects, and other activities.
 
-> **Related project:** The Todo App setup instructions are also available in this repository — see [`TODO-APP-README.md`](TODO-APP-README.md).
+> **Related project:** The Todo App setup instructions are also available in this repository. See [`TODO-APP-README.md`](TODO-APP-README.md).
 
 ## Prerequisites
 
@@ -23,7 +23,7 @@ docker compose up --build
 Then open:
 - **Frontend:** http://localhost:3000
 - **Backend API:** http://localhost:8080/api
-- **pgAdmin:** http://localhost:5050 (login: `admin@timetracking.local` / `admin`) — [see setup steps below](#pgadmin-setup)
+- **pgAdmin:** http://localhost:5050 (login: `admin@timetracking.local` / `admin`). See [setup steps below](#pgadmin-setup).
 
 > No `.env` file is needed for Docker Compose. JWT secrets and database credentials are already configured inside `docker-compose.yml` with sensible defaults.
 
@@ -57,8 +57,8 @@ Once logged in you will see:
 
 After opening http://localhost:5050:
 
-1. **Login** — use `admin@timetracking.local` / `admin` (first time only, then session is saved)
-2. **Master Password** — if a dialog asks for "Master Password", leave it empty and click **OK** (or enter any password you want)
+1. **Login:** use `admin@timetracking.local` / `admin` (first time only, then session is saved)
+2. **Master Password:** if a dialog asks for "Master Password", leave it empty and click **OK** (or enter any password you want)
 3. Click **"Add New Server"** (or right-click "Servers" → "Register" → "Server...")
 4. In the **General** tab, enter any name (e.g., `timetracking`)
 5. Switch to the **Connection** tab and fill in:
@@ -239,5 +239,3 @@ npx playwright test      # Run Playwright end-to-end tests
 ```
 
 ## License
-
-Individual academic project for University of Passau.
