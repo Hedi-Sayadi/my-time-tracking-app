@@ -237,5 +237,3 @@ npx playwright test      # Run Playwright end-to-end tests
 ├── docker-compose.yml # Docker orchestration
 └── README.md
 ```
-
-## License
